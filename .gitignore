@@ -1,0 +1,15 @@
+# Ignore compiled Java files
+*.class
+
+# Ignore Maven & Gradle build files
+target/
+*.jar
+*.war
+*.ear
+
+# Ignore IntelliJ IDEA and Eclipse settings
+.idea/
+.vscode/
+.classpath
+.project
+.settings/
