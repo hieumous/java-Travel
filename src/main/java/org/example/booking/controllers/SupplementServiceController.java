@@ -1,4 +1,4 @@
-package org.example.booking.controller;
+package org.example.booking.controllers;
 
 public class SupplementServiceController {
 }
