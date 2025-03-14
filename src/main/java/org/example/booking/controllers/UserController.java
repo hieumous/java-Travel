@@ -1,5 +1,4 @@
 package org.example.booking.controllers;
-
 import org.example.booking.models.User;
 import org.example.booking.services.UserService;
 import org.springframework.web.bind.annotation.*;

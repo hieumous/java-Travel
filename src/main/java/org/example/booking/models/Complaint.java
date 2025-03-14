@@ -1,6 +1,7 @@
 package org.example.booking.models;
 
 import jakarta.persistence.*;
+import org.example.booking.enums.ComplaintStatus;
 
 import java.time.LocalDateTime;
 

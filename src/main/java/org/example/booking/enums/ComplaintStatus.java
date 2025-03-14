@@ -1,4 +1,4 @@
-package org.example.booking.models;
+package org.example.booking.enums;
 
 public enum ComplaintStatus {
     NEW,
