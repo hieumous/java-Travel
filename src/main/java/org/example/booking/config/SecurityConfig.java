@@ -1,4 +1,4 @@
-
+/*
 package org.example.booking.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,3 +38,4 @@ public class SecurityConfig {
         return authConfig.getAuthenticationManager();
     }
 }
+ */

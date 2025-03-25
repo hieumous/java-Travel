@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
+<head th:fragment="head">
     <title>Vacation - Free Bootstrap 4 Template by Colorlib</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -26,22 +24,3 @@
     <link rel="stylesheet" href="/css/icomoon.css">
     <link rel="stylesheet" href="/css/style.css">
 </head>
-<div th:replace="masterpage/head::head"></div>
-<body>
-<!-- nav -->
-<div th:replace="masterpage/navbar::navbar"></div>
-<!-- END nav -->
-<th:block th:fragment="content">
-
-</th:block>
-<div th:replace="masterpage/footer::footer"></div>
-
-
-
-
-<!-- loader -->
-<div th:replace="masterpage/loader::loader"></div>
-
-
-</body>
-</html>
