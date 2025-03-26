@@ -1,7 +1,6 @@
 package org.example.booking.services;
 import org.example.booking.models.User;
 import org.example.booking.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.Optional;

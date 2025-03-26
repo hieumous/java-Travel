@@ -45,7 +45,7 @@ public class Homestay {
     public Homestay() {}
 
     // Constructor có đối số
-    public Homestay(String name, String location, String description) {
+    public Homestay(String name, String location, String description, double pricePerNight, String imageUrl) {
         this.name = name;
         this.location = location;
         this.description = description;
