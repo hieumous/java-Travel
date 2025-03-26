@@ -1,12 +1,9 @@
 package org.example.booking.services;
-import org.apache.tomcat.Jar;
 import org.example.booking.models.Homestay;
-import org.example.booking.models.User;
 import org.example.booking.repositories.HomestayRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.List;
 @Service
 public class HomestayService {
