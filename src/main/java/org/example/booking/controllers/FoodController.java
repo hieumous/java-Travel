@@ -1,6 +1,8 @@
 package org.example.booking.controllers;
 
 import org.example.booking.models.Food;
+import org.example.booking.models.OrderRequest;
+import org.example.booking.models.OrderResponse;
 import org.example.booking.services.FoodService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -66,5 +68,11 @@ public class FoodController {
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<String> handleRuntimeException(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @PostMapping("/order")
+    public ResponseEntity<OrderResponse> orderFood(@RequestBody OrderRequest orderRequest) {
+        OrderResponse orderResponse = foodService.orderFood(orderRequest);
+        return ResponseEntity.ok(orderResponse);
     }
 }

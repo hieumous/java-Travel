@@ -1,5 +1,7 @@
 package org.example.booking.controllers;
 
+import org.example.booking.models.OrderRequest;
+import org.example.booking.models.OrderResponse;
 import org.example.booking.models.SupplementService;
 import org.example.booking.services.SupplementServiceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,5 +58,11 @@ public class SupplementServiceController {
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<String> handleRuntimeException(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @PostMapping("/order")
+    public ResponseEntity<OrderResponse> orderSupplement(@RequestBody OrderRequest orderRequest) {
+        OrderResponse orderResponse = supplementService.orderSupplement(orderRequest);
+        return ResponseEntity.ok(orderResponse);
     }
 }

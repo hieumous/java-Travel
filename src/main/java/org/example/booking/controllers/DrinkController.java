@@ -1,6 +1,8 @@
 package org.example.booking.controllers;
 
 import org.example.booking.models.Drink;
+import org.example.booking.models.OrderRequest;
+import org.example.booking.models.OrderResponse;
 import org.example.booking.services.DrinkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -88,5 +90,11 @@ public class DrinkController {
     public ResponseEntity<String> deleteDrink(@PathVariable  Long id) {
         drinkService.deleteDrink(id);
         return ResponseEntity.ok("Xóa đồ uống thành công!");
+    }
+
+    @PostMapping("/order")
+    public ResponseEntity<OrderResponse> orderDrink(@RequestBody OrderRequest orderRequest) {
+        OrderResponse orderResponse = drinkService.orderDrink(orderRequest);
+        return ResponseEntity.ok(orderResponse);
     }
 }
