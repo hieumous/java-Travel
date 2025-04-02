@@ -4,9 +4,10 @@ import org.example.booking.models.Payment;
 import org.example.booking.models.PaymentInfo;
 import org.example.booking.models.PaymentStatus;
 import org.example.booking.repositories.PaymentRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.UUID;
-
+@Service
 public class PaymentService {
     private final PaymentRepository paymentRepository;
 
