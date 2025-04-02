@@ -1,10 +1,13 @@
 package org.example.booking.models;
 
 import jakarta.persistence.*;
+import org.example.booking.enums.PaymentMethod;
+
+import java.util.List;
 
 @Entity
 @Table(name = "supplements")
-public class SupplementService {
+public abstract class SupplementService {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,6 +49,8 @@ public class SupplementService {
     public void setPrice(Double price) {
         this.price = price;
     }
+
+    public abstract Order createOrder(List<SupplementService> supplements, PaymentMethod paymentMethod);
 
     public static class NewSupplementServiceRequest {
 
