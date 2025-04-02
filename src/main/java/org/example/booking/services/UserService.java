@@ -32,7 +32,16 @@ public class UserService {
             throw new RuntimeException("User không tồn tại!");
         }
     }
-
-
+    //Đăng ký tài khoản
+    public User registerUser(User user) {
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+            throw new RuntimeException("Email đã tồn tại!");
+        }
+        return userRepository.save(user);
+    }
+    //Tìm người dùng theo ID
+    public Optional<User> getUserById(Long id) {
+        return userRepository.findById(id);
+    }
 
 }

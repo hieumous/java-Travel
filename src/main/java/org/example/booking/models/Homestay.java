@@ -124,4 +124,7 @@ public class Homestay {
     public void setBookings(List<Booking> bookings) {
         this.bookings = bookings;
     }
+
+    public void setImageUrls(List<String> imageUrls) {
+    }
 }

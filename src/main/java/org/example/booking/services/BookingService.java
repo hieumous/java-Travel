@@ -34,4 +34,6 @@ public class BookingService {
     public List<Booking> getBookingsByUserId(Long userId) {
         return bookingRepository.findByUserId(userId);
     }
+
+
 }

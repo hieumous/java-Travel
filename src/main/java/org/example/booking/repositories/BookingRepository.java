@@ -14,4 +14,5 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findByUser(User user);
     List<Booking> findByHomestay(Homestay homestay);
     List<Booking> findByCheckInDateBetween(LocalDate start, LocalDate end);
+    List<Booking> findByHomestayIdAndMonth(Long homestayId, int month);
 }
