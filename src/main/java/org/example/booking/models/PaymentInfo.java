@@ -20,6 +20,7 @@ public class PaymentInfo {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String paymentReference;
+    private double totalAmount;
 
     public Long getId() {
         return id;
@@ -121,4 +122,14 @@ public class PaymentInfo {
     public void setPaymentReference(String paymentReference) {
         this.paymentReference = paymentReference;
     }
+
+    public PaymentInfo getPaymentInfo() {
+        PaymentInfo paymentInfo = new PaymentInfo();
+        paymentInfo.setTransactionId(this.transactionId);
+        paymentInfo.setAmount(this.totalAmount);
+        paymentInfo.setPaymentMethod(this.paymentMethod);
+        // Add other relevant payment information
+        return paymentInfo;
+    }
+
 }

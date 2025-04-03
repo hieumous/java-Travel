@@ -3,13 +3,14 @@ package org.example.booking.services;
 import org.example.booking.enums.PaymentMethod;
 import org.example.booking.models.Order;
 import org.example.booking.models.PaymentInfo;
+import org.example.booking.models.PaymentStatus;
 import org.example.booking.models.SupplementService;
 import org.example.booking.repositories.OrderRepository;
 import org.example.booking.repositories.SupplementServiceRepository;
 
 import java.util.List;
 
-public class SupplementOrderService implements SupplementService {
+public class SupplementOrderService extends SupplementService {
     private final SupplementServiceRepository supplementRepository;
     private final PaymentService paymentService;
     private final OrderRepository orderRepository;
@@ -28,10 +29,10 @@ public class SupplementOrderService implements SupplementService {
         order.setItems(supplements);
         order.setTotalAmount(calculateTotalAmount(supplements));
 
-        PaymentInfo paymentInfo = paymentService.processPayment(order, paymentMethod);
+        PaymentStatus paymentInfo = paymentService.processPayment(order.getPaymentInfo());
         order.setPaymentInfo(paymentInfo);
-
         return order;
+
     }
 
     private double calculateTotalAmount(List<SupplementService> supplements) {

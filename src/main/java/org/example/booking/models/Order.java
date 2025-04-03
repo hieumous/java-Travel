@@ -1,6 +1,7 @@
 package org.example.booking.models;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class Order {
     private Long id;
@@ -9,6 +10,9 @@ public class Order {
     private SupplementService supplementService;
     private int quantity;
     private LocalDateTime deliveryTime;
+    private List<SupplementService> items;
+    private double totalAmount;
+    private PaymentStatus paymentInfo;
 
     public Long getId() {
         return id;
@@ -56,5 +60,29 @@ public class Order {
 
     public void setDeliveryTime(LocalDateTime deliveryTime) {
         this.deliveryTime = deliveryTime;
+    }
+
+    public void setItems(List<SupplementService> items) {
+        this.items = items;
+    }
+
+    public List<SupplementService> getItems() {
+        return items;
+    }
+
+    public void setTotalAmount(double totalAmount) {
+        this.totalAmount = totalAmount;
+    }
+
+    public double getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setPaymentInfo(PaymentStatus paymentInfo) {
+        this.paymentInfo = paymentInfo;
+    }
+
+    public PaymentInfo getPaymentInfo() {
+        return paymentInfo;
     }
 }

@@ -1,5 +1,6 @@
 package org.example.booking.services;
 
+import org.example.booking.enums.PaymentMethod;
 import org.example.booking.exceptions.ResourceNotFoundException;
 import org.example.booking.models.Order;
 import org.example.booking.models.OrderRequest;
@@ -37,7 +38,12 @@ public class SupplementServiceService {
 
     // Tạo dịch vụ bổ sung mới
     public SupplementService createSupplement(SupplementService.NewSupplementServiceRequest request) {
-        SupplementService supplementService = new SupplementService();
+        SupplementService supplementService = new SupplementService() {
+            @Override
+            public Order createOrder(List<SupplementService> supplements, PaymentMethod paymentMethod) {
+                return null;
+            }
+        };
         supplementService.setName(request.getName());
         supplementService.setDescription(request.getDescription());
         supplementService.setPrice(request.getPrice());

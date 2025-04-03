@@ -1,6 +1,5 @@
 package org.example.booking.services;
 
-import org.example.booking.models.Payment;
 import org.example.booking.models.PaymentInfo;
 import org.example.booking.models.PaymentStatus;
 import org.example.booking.repositories.PaymentRepository;
@@ -31,7 +30,7 @@ public class PaymentService {
         paymentStatus.setTransactionId(transactionId);
         paymentStatus.setAmount(paymentInfo.getAmount());
         paymentStatus.setCurrency(paymentInfo.getCurrency());
-        paymentStatus.setPaymentMethod(paymentInfo.getPaymentMethod().name());
+        paymentStatus.setPaymentMethod(paymentInfo.getPaymentMethod().toString());
         paymentStatus.setPaymentReference(paymentInfo.getPaymentReference());
         paymentStatus.setStatus(PaymentStatus.PaymentStatusType.PENDING);
 
