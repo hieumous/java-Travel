@@ -71,7 +71,7 @@ public class Order {
     }
 
     public void setTotalAmount(double totalAmount) {
-        this.totalAmount = totalAmount;
+        this.totalAmount = (double) totalAmount;
     }
 
     public double getTotalAmount() {
@@ -82,7 +82,8 @@ public class Order {
         this.paymentInfo = paymentInfo;
     }
 
-    public PaymentInfo getPaymentInfo() {
+    public PaymentStatus getPaymentInfo() {
         return paymentInfo;
     }
+
 }

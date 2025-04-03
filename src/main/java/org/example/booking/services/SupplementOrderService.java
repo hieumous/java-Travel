@@ -7,9 +7,10 @@ import org.example.booking.models.PaymentStatus;
 import org.example.booking.models.SupplementService;
 import org.example.booking.repositories.OrderRepository;
 import org.example.booking.repositories.SupplementServiceRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 
 import java.util.List;
-
 public class SupplementOrderService extends SupplementService {
     private final SupplementServiceRepository supplementRepository;
     private final PaymentService paymentService;
@@ -29,10 +30,14 @@ public class SupplementOrderService extends SupplementService {
         order.setItems(supplements);
         order.setTotalAmount(calculateTotalAmount(supplements));
 
-        PaymentStatus paymentInfo = paymentService.processPayment(order.getPaymentInfo());
+        PaymentStatus paymentInfo = paymentService.processPayment(paymentService(order.getPaymentInfo()));
         order.setPaymentInfo(paymentInfo);
         return order;
 
+    }
+
+    private PaymentInfo paymentService(PaymentStatus paymentInfo) {
+        return null;
     }
 
     private double calculateTotalAmount(List<SupplementService> supplements) {
