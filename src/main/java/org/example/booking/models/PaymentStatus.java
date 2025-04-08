@@ -1,6 +1,7 @@
 package org.example.booking.models;
 
 public class PaymentStatus extends Payment {
+    public static PaymentStatus SUCCESSFUL;
     private String paymentGatewayId;
     private String paymentGatewayTransactionId;
     private String paymentGatewayResponseCode;

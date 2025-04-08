@@ -37,7 +37,10 @@ public class SupplementOrderService extends SupplementService {
     }
 
     private PaymentInfo paymentService(PaymentStatus paymentInfo) {
-        return null;
+        PaymentInfo updatedPaymentInfo = new PaymentInfo();
+        updatedPaymentInfo.setStatus(PaymentStatus.SUCCESSFUL);
+        updatedPaymentInfo.setTransactionId("TX-1234");
+        return updatedPaymentInfo;
     }
 
     private double calculateTotalAmount(List<SupplementService> supplements) {
