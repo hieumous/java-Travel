@@ -7,6 +7,6 @@ import java.util.Optional;
 
 @Repository
 public interface SupplementServiceRepository extends JpaRepository<SupplementService, Long> {
-    Optional<SupplementService> findByTitle(String title);
+    Optional<SupplementService> findByName(String name);
     Optional<SupplementService> findByDescription(String description);
 }

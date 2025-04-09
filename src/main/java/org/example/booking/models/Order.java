@@ -1,19 +1,43 @@
 package org.example.booking.models;
 
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Entity
+@Table(name = "orders")
 public class Order {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "drink_id")
     private Drink drink;
+
+    @ManyToOne
+    @JoinColumn(name = "food_id")
     private Food food;
+
+    @ManyToOne
+    @JoinColumn(name = "supplement_service_id")
     private SupplementService supplementService;
+
     private int quantity;
+
     private LocalDateTime deliveryTime;
+
+    @OneToMany(mappedBy = "order")
     private List<SupplementService> items;
+
     private double totalAmount;
+
+    @OneToOne // Mối quan hệ 1-1 với PaymentStatus
+    @JoinColumn(name = "payment_status_id") // Cột khóa ngoại trong bảng orders
     private PaymentStatus paymentInfo;
 
+    // Getter và Setter
     public Long getId() {
         return id;
     }
@@ -62,28 +86,27 @@ public class Order {
         this.deliveryTime = deliveryTime;
     }
 
-    public void setItems(List<SupplementService> items) {
-        this.items = items;
-    }
-
     public List<SupplementService> getItems() {
         return items;
     }
 
-    public void setTotalAmount(double totalAmount) {
-        this.totalAmount = (double) totalAmount;
+    public void setItems(List<SupplementService> items) {
+        this.items = items;
     }
 
     public double getTotalAmount() {
         return totalAmount;
     }
 
-    public void setPaymentInfo(PaymentStatus paymentInfo) {
-        this.paymentInfo = paymentInfo;
+    public void setTotalAmount(double totalAmount) {
+        this.totalAmount = totalAmount;
     }
 
     public PaymentStatus getPaymentInfo() {
         return paymentInfo;
     }
 
+    public void setPaymentInfo(PaymentStatus paymentInfo) {
+        this.paymentInfo = paymentInfo;
+    }
 }

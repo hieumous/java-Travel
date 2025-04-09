@@ -17,6 +17,14 @@ public abstract class SupplementService {
     private String description;
     private Double price;
 
+    @ManyToOne
+    @JoinColumn(name = "order_id") // Cột khóa ngoại trong bảng supplements
+    private Order order; // Thêm trường để ánh xạ mối quan hệ ngược lại
+
+    // Constructor mặc định (yêu cầu bởi JPA)
+    public SupplementService() {
+    }
+
     // Getters và Setters
     public Long getId() {
         return id;
@@ -50,15 +58,23 @@ public abstract class SupplementService {
         this.price = price;
     }
 
+    public Order getOrder() {
+        return order;
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
+    }
+
+    // Phương thức trừu tượng
     public abstract Order createOrder(List<SupplementService> supplements, PaymentMethod paymentMethod);
 
+    // Lớp lồng NewSupplementServiceRequest (giữ nguyên)
     public static class NewSupplementServiceRequest {
-
         private String name;
         private String description;
         private Double price;
 
-        // Getters and Setters
         public String getName() {
             return name;
         }
@@ -84,14 +100,12 @@ public abstract class SupplementService {
         }
     }
 
+    // Lớp lồng UpdateSupplementServiceRequest (giữ nguyên)
     public static class UpdateSupplementServiceRequest {
-
         private String name;
-
         private String description;
-
         private Double price;
-        // Getters and Setters
+
         public String getName() {
             return name;
         }

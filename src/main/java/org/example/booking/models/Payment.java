@@ -1,14 +1,29 @@
 package org.example.booking.models;
 
-public class Payment {
+import jakarta.persistence.*;
+
+@Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Table(name = "payments")
+public abstract class Payment {
+
+    @Id
     private String id;
+
     private String transactionId;
     private double amount;
     private String currency;
     private String paymentMethod;
     private String paymentReference;
+
+    @Enumerated(EnumType.STRING)
     private PaymentStatusType status;
+
     private String errorMessage;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id") // Cột khóa ngoại trong bảng payments
+    private User user; // Thêm trường user để liên kết với User
 
     public enum PaymentStatusType {
         PENDING,
@@ -16,6 +31,11 @@ public class Payment {
         FAILED
     }
 
+    // Constructor mặc định
+    public Payment() {
+    }
+
+    // Getters và Setters
     public String getId() {
         return id;
     }
@@ -78,5 +98,13 @@ public class Payment {
 
     public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

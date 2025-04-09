@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import org.example.booking.enums.HomestayStatus;
 
 import java.util.List;
+
 @Entity
 @Table(name = "homestays")
 public class Homestay {
@@ -21,17 +22,17 @@ public class Homestay {
     private String description;
 
     @Column(nullable = false)
-    private double pricePerNight = 0;//  Giá thuê mỗi đêm
+    private double pricePerNight = 0;
 
     @Column(nullable = false)
-    private String imageUrl; //  Link hình ảnh homestay
+    private String imageUrl;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private HomestayStatus status = HomestayStatus.PENDING;
 
     @OneToMany(mappedBy = "homestay", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Booking> bookings; // Danh sách đặt phòng theo tháng
+    private List<Booking> bookings;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(
@@ -41,16 +42,21 @@ public class Homestay {
     )
     private List<Amenity> amenities;
 
+    @ManyToOne
+    @JoinColumn(name = "owner_id") // Cột khóa ngoại trong bảng homestays
+    private User owner; // Thêm trường owner để liên kết với User
+
     // Constructor không đối số
     public Homestay() {}
 
-    // Constructor có đối số
-    public Homestay(String name, String location, String description, double pricePerNight, String imageUrl) {
+    // Constructor có đối số (cập nhật để bao gồm owner)
+    public Homestay(String name, String location, String description, double pricePerNight, String imageUrl, User owner) {
         this.name = name;
         this.location = location;
         this.description = description;
         this.pricePerNight = pricePerNight;
         this.imageUrl = imageUrl;
+        this.owner = owner;
     }
 
     // Getters và Setters
@@ -113,6 +119,7 @@ public class Homestay {
     public List<Amenity> getAmenities() {
         return amenities;
     }
+
     public void setAmenities(List<Amenity> amenities) {
         this.amenities = amenities;
     }
@@ -125,6 +132,15 @@ public class Homestay {
         this.bookings = bookings;
     }
 
+    public User getOwner() {
+        return owner;
+    }
+
+    public void setOwner(User owner) {
+        this.owner = owner;
+    }
+
     public void setImageUrls(List<String> imageUrls) {
+        // Nếu bạn cần xử lý danh sách imageUrls, có thể thay imageUrl thành List<String>
     }
 }
