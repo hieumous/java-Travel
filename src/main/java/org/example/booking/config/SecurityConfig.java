@@ -20,7 +20,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")  // Chỉ ADMIN truy cập
                         .requestMatchers("/api/owner/**").hasRole("OWNER")  // Chỉ OWNER truy cập
-                        .requestMatchers("/api/user/**").hasAnyRole("CUSTOMER", "OWNER", "ADMIN")  // Ai cũng truy cập được
+                        .requestMatchers("/api/user/home").hasAnyRole("CUSTOMER", "OWNER", "ADMIN")  // Ai cũng truy cập được
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
