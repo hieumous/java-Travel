@@ -9490,3 +9490,46 @@ textarea.form-control {
   100% {
     stroke-dasharray: 89, 200;
     stroke-dashoffset: -136px; } }
+.navbar .nav-link {
+  color: #ffffff;
+  font-weight: 500;
+  transition: all 0.3s ease-in-out;
+}
+
+/* ====== RESET CHUNG ====== */
+.navbar .nav-link {
+  color: #ffffff;
+  font-weight: 500;
+  transition: all 0.3s ease-in-out;
+}
+
+/* ====== HOVER CHUNG ====== */
+.navbar .nav-link:hover {
+  color: #ffc400 !important;
+  transform: translateY(-2px);
+}
+
+/* ====== NÚT HOME và LOGIN ACTIVE ====== */
+.navbar .nav-item.active .nav-link,
+.navbar .nav-link.active {
+  color: #fcbf49 !important;
+  font-weight: 600;
+  border-bottom: 2px solid #fcbf49;
+  padding-bottom: 4px;
+}
+
+/* ====== NÚT BOOK NOW ====== */
+.navbar .cta .nav-link {
+  background-color: #fcbf49;
+  color: #fff !important;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-weight: 600;
+  transition: all 0.3s ease-in-out;
+}
+
+.navbar .cta .nav-link:hover {
+  background-color: #e0a800 !important;
+  box-shadow: 0 0 15px 5px rgba(224, 168, 0, 0.6);
+  transform: scale(1.05);
+}

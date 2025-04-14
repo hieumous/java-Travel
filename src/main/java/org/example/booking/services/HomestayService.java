@@ -14,7 +14,7 @@ public class HomestayService {
     @Autowired
     private HomestayRepository homestayRepository;
     @Autowired
-    private ImageService ImageService;
+    private ImageService imageService;
     //Tim kiem theo name
     public List<Homestay> findByName(String name) {
         return homestayRepository.findByNameContainingIgnoreCase(name);
@@ -29,12 +29,21 @@ public class HomestayService {
     }
     public Homestay registerHomestay(Homestay homestay, List<MultipartFile> images) {
         // Upload ảnh
-        List<String> imageUrls = ImageService.uploadImages(images);
+        List<String> imageUrls = imageService.uploadImages(images);
         homestay.setImageUrls(imageUrls);
 
         // Lưu homestay
         homestay.setStatus(HomestayStatus.PENDING); // Đợi duyệt
         return homestayRepository.save(homestay);
     }
+    // Thêm phương thức findAll
+    public List<Homestay> findAll() {
+        return homestayRepository.findAll();
+    }
 
+    // Thêm phương thức findById
+    public Homestay findById(Long id) {
+        return homestayRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Homestay not found with id: " + id));
+    }
 }

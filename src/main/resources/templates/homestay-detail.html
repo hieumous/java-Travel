@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:replace="masterpage/head::head"></div>
+<div th:replace="masterpage/navbar::navbar"></div>
+
+<th:block th:fragment="content">
+    <section class="ftco-section">
+        <div class="container">
+            <div class="row justify-content-center pb-4">
+                <div class="col-md-12 heading-section text-center ftco-animate">
+                    <h2 class="mb-4" th:text="${homestay.name}">Tên Homestay</h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 ftco-animate">
+                    <img th:src="@{'/images/' + ${homestay.imageUrl}}" class="img-fluid" alt="Homestay Image" th:alt="${homestay.name}">
+                </div>
+                <div class="col-md-6 ftco-animate">
+                    <h3>Thông Tin Homestay</h3>
+                    <p><strong>Giá:</strong> <span th:text="'$' + ${homestay.pricePerNight} + '/night'">$300/night</span></p>
+                    <p><strong>Địa điểm:</strong> <span th:text="${homestay.location}">Bali, Indonesia</span></p>
+                    <p><strong>Mô tả:</strong> <span th:text="${homestay.description}">No description available</span></p>
+                    <ul>
+                        <li><span class="flaticon-shower"></span>Phòng tắm: 2</li>
+                        <li><span class="flaticon-king-size"></span>Giường: 3</li>
+                        <li><span class="flaticon-sun-umbrella"></span>Tiện ích: Near Beach</li>
+                    </ul>
+                    <a th:href="@{/booking?homestayId=${homestay.id}}" class="btn btn-primary py-3 px-5 mt-3">Đặt Phòng Ngay</a>
+                </div>
+            </div>
+            <div class="row mt-5">
+                <div class="col-md-12 ftco-animate">
+                    <div th:fragment="extra-content">
+                        <!-- review, menu service -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</th:block>
+
+<div th:replace="masterpage/loader::loader"></div>
+<div th:replace="masterpage/footer::footer"></div>
+</body>
+</html>
