@@ -21,6 +21,25 @@ public class PaymentInfo {
     private LocalDateTime updatedAt;
     private String paymentReference;
     private double totalAmount;
+    private Long bookingId;
+    private Long homestayId;
+
+
+    public Long getBookingId() {
+        return bookingId;
+    }
+
+    public void setBookingId(Long bookingId) {
+        this.bookingId = bookingId;
+    }
+
+    public Long getHomestayId() {
+        return homestayId;
+    }
+
+    public void setHomestayId(Long homestayId) {
+        this.homestayId = homestayId;
+    }
 
     public Long getId() {
         return id;

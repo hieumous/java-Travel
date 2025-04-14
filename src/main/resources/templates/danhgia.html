@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:replace="masterpage/head::head"></div>
+<div th:replace="masterpage/navbar::navbar"></div>
+
+<div class="container" style="max-width: 500px; margin-top: 80px;">
+  <h2 class="text-center mb-4">Đánh giá Homestay</h2>
+
+  <!-- Hiển thị thông báo nếu có -->
+  <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
+  <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+  <form th:action="@{/danhgia}" method="post">
+    <!-- Trường ẩn, giá trị nhận từ model (không có fallback mặc định) -->
+    <input type="hidden" name="homestayId" th:value="${homestayId}" />
+    <input type="hidden" name="userId" th:value="${userId}" />
+
+    <div class="form-group mb-3">
+      <label for="rating">Chọn số sao:</label>
+      <select id="rating" name="rating" class="form-control" required>
+        <option value="">Chọn số sao</option>
+        <option value="5">5 sao</option>
+        <option value="4">4 sao</option>
+        <option value="3">3 sao</option>
+        <option value="2">2 sao</option>
+        <option value="1">1 sao</option>
+      </select>
+    </div>
+    <div class="form-group mb-3">
+      <label for="comment">Bình luận:</label>
+      <textarea id="comment" name="comment" class="form-control" placeholder="Nhập bình luận của bạn..." required></textarea>
+    </div>
+    <div class="d-grid">
+      <button type="submit" class="btn btn-success btn-block">Gửi đánh giá</button>
+    </div>
+  </form>
+</div>
+
+<div th:replace="masterpage/loader::loader"></div>
+<div th:replace="masterpage/footer::footer"></div>
+</body>
+</html>

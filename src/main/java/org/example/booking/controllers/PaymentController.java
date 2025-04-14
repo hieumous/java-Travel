@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/api/payments")
@@ -27,18 +28,25 @@ public class PaymentController {
      * @return The PaymentStatus object.
      */
     @PostMapping("/initiate")
-    @PreAuthorize("hasRole('USER')") // Chỉ người dùng đã đăng nhập mới có thể gọi API này
-    public ResponseEntity<PaymentStatus> initiatePayment(@RequestBody PaymentInfo paymentInfo) {
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<PaymentStatus> initiatePayment(@RequestBody PaymentInfo paymentInfo,
+                                                         HttpSession session) {
         logger.info("Initiating payment with method: {}", paymentInfo.getPaymentMethod());
 
         try {
             PaymentStatus paymentStatus = paymentService.processPayment(paymentInfo);
+
+            // Gắn bookingId & homestayId vào session (nếu cần dùng cho đánh giá)
+            session.setAttribute("bookingId", paymentInfo.getBookingId());
+            session.setAttribute("homestayId", paymentInfo.getHomestayId());
+
             return new ResponseEntity<>(paymentStatus, HttpStatus.OK);
         } catch (Exception e) {
             logger.error("Error initiating payment: {}", e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 
     /**
      * Gets the payment status by transaction ID.
@@ -57,4 +65,5 @@ public class PaymentController {
         // If you need to query PaymentStatus, you would need a PaymentStatusRepository.
         return new ResponseEntity<>(null, HttpStatus.NOT_IMPLEMENTED);
     }
+
 }

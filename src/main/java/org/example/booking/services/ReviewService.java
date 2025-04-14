@@ -47,4 +47,8 @@ public class ReviewService {
         response.setResponseText(responseText);
         return reviewResponseRepository.save(response);
     }
+
+    public List<Review> getAllReviews() {
+        return reviewRepository.findAll();
+    }
 }
