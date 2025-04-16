@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Thực đơn</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1950&q=80') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 0;
+        }
+
+        .overlay {
+            background: rgba(255,255,255,0.9);
+            padding: 30px;
+            min-height: 100vh;
+        }
+
+        .banner {
+            background: url('https://images.unsplash.com/photo-1510626176961-4bfb7f1e0cde') no-repeat center;
+            background-size: cover;
+            padding: 50px;
+            text-align: center;
+            color: white;
+            text-shadow: 2px 2px 5px #333;
+            font-size: 40px;
+            margin-bottom: 30px;
+            border-radius: 12px;
+        }
+
+        .filters {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .filters input, .filters select, .filters button {
+            padding: 10px;
+            font-size: 14px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .menu-grid, .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .menu-item, .service-item {
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            padding-bottom: 10px;
+        }
+
+        .menu-item:hover, .service-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .menu-item img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .menu-details {
+            padding: 15px;
+        }
+
+        .menu-details h3 {
+            margin: 0 0 10px;
+        }
+
+        .menu-price {
+            color: #e67e22;
+            font-weight: bold;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 30px;
+            margin: 50px 0 20px;
+            color: #333;
+        }
+
+        .service-details {
+            padding: 15px;
+        }
+
+        .service-name {
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .service-price {
+            color: #3498db;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="overlay">
+    <div class="banner">Thực đơn</div>
+
+    <div class="filters">
+        <input type="text" id="searchInput" placeholder="Tìm theo tên">
+        <input type="number" id="minPrice" placeholder="Giá từ">
+        <input type="number" id="maxPrice" placeholder="Đến">
+        <select id="typeFilter">
+            <option value="">Tất cả</option>
+            <option value="food">Đồ ăn</option>
+            <option value="drink">Thức uống</option>
+        </select>
+        <button onclick="loadMenu()">Tìm kiếm</button>
+    </div>
+
+    <div class="menu-grid" id="menuList">
+        <!-- Món ăn / thức uống sẽ hiển thị ở đây -->
+    </div>
+
+    <h2 class="section-title">Dịch vụ tiện ích khác</h2>
+    <div class="services-grid" id="supplementList">
+        <!-- Dịch vụ sẽ hiển thị ở đây -->
+    </div>
+</div>
+
+<script>
+    async function loadMenu() {
+        const name = document.getElementById('searchInput').value.trim().toLowerCase();
+        const minPrice = document.getElementById('minPrice').value;
+        const maxPrice = document.getElementById('maxPrice').value;
+        const type = document.getElementById('typeFilter').value;
+
+        let items = [];
+
+        if (!type || type === '') {
+            const foods = await fetch('/api/foods').then(res => res.json());
+            const drinks = await fetch('/api/drinks').then(res => res.json());
+            items = [...foods, ...drinks];
+        } else {
+            const endpoint = type === 'drink' ? '/api/drinks' : '/api/foods';
+            items = await fetch(endpoint).then(res => res.json());
+        }
+
+        renderMenu(items, name, minPrice, maxPrice);
+    }
+
+    function renderMenu(items, name, minPrice, maxPrice) {
+        const menuList = document.getElementById('menuList');
+        menuList.innerHTML = '';
+
+        const filtered = items.filter(item => {
+            const matchName = !name || item.name.toLowerCase().includes(name);
+            const matchMin = !minPrice || item.price >= parseFloat(minPrice);
+            const matchMax = !maxPrice || item.price <= parseFloat(maxPrice);
+            return matchName && matchMin && matchMax;
+        });
+
+        if (filtered.length === 0) {
+            menuList.innerHTML = '<p style="grid-column: 1 / -1; text-align: center;">Không tìm thấy món phù hợp.</p>';
+            return;
+        }
+
+        filtered.forEach(item => {
+            const card = `
+        <div class="menu-item">
+          <img src="${item.imageUrl || 'https://via.placeholder.com/300x200?text=No+Image'}" alt="${item.name}">
+          <div class="menu-details">
+            <h3>${item.name}</h3>
+            <p>${item.description}</p>
+            <p class="menu-price">${item.price.toLocaleString('vi-VN')} đ</p>
+          </div>
+        </div>
+      `;
+            menuList.insertAdjacentHTML('beforeend', card);
+        });
+    }
+
+    async function loadSupplements() {
+        try {
+            const response = await fetch('/api/supplements');
+            const data = await response.json();
+            const container = document.getElementById('supplementList');
+            container.innerHTML = '';
+
+            if (data.length === 0) {
+                container.innerHTML = '<p style="grid-column: 1 / -1; text-align: center;">Không có dịch vụ bổ sung nào.</p>';
+                return;
+            }
+
+            data.forEach(s => {
+                const card = `
+          <div class="service-item">
+            <div class="service-details">
+              <div class="service-name">${s.name}</div>
+              <div>${s.description || ''}</div>
+              <div class="service-price">${s.price.toLocaleString('vi-VN')} đ</div>
+            </div>
+          </div>
+        `;
+                container.insertAdjacentHTML('beforeend', card);
+            });
+        } catch (err) {
+            console.error('Lỗi khi tải dịch vụ:', err);
+            document.getElementById('supplementList').innerHTML = '<p>Lỗi khi tải dịch vụ bổ sung.</p>';
+        }
+    }
+
+    // Tải khi trang được load
+    window.addEventListener('DOMContentLoaded', () => {
+        loadMenu();
+        loadSupplements();
+    });
+</script>
+
+</body>
+</html>
