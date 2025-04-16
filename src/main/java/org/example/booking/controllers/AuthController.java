@@ -15,22 +15,22 @@ public class AuthController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/loginacc")
+    @GetMapping("/login")
     public String showLoginForm() {
-        return "loginacc"; // Trả về loginacc.html
+        return "login"; // Trả về login.html
     }
 
-    @PostMapping("/loginacc")
+    @PostMapping("/login")
     public String loginUser(@RequestParam String username,
                             @RequestParam String password,
                             Model model) {
         Optional<User> optionalUser = userService.findByUsername(username);
         if (optionalUser.isPresent() && optionalUser.get().getPassword().equals(password)) {
             model.addAttribute("loggedInUser", optionalUser.get());
-            return "redirect:/"; // Chuyển về trang chủ nếu đăng nhập thành công
+            return "home"; // Chuyển về trang chủ nếu đăng nhập thành công
         } else {
             model.addAttribute("error", "Sai tên đăng nhập hoặc mật khẩu!");
-            return "loginacc";
+            return "login";
         }
     }
 

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:replace="masterpage/head::head"></div>
+<div th:replace="masterpage/navbar::navbar"></div>
+
+<th:block th:fragment="content">
+    <section class="ftco-section">
+        <div class="container">
+            <div class="row justify-content-center pb-4">
+                <div class="col-md-12 heading-section text-center ftco-animate">
+                    <h2 class="mb-4">Đặt Phòng Thành Công</h2>
+                    <p>Cảm ơn bạn đã đặt phòng! Chúng tôi sẽ liên hệ với bạn sớm để xác nhận.</p>
+                    <a th:href="@{/home}" class="btn btn-primary py-3 px-5 mt-3">Quay Lại Trang Chủ</a>
+                </div>
+            </div>
+        </div>
+    </section>
+</th:block>
+
+<div th:replace="masterpage/loader::loader"></div>
+<div th:replace="masterpage/footer::footer"></div>
+</body>
+</html>
