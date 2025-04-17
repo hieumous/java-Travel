@@ -146,10 +146,11 @@
         if (!type || type === '') {
             const foods = await fetch('/api/foods').then(res => res.json());
             const drinks = await fetch('/api/drinks').then(res => res.json());
-            items = [...foods, ...drinks];
+            items = [...foods.map(f => ({...f, type: 'food'})), ...drinks.map(d => ({...d, type: 'drink'}))];
         } else {
             const endpoint = type === 'drink' ? '/api/drinks' : '/api/foods';
-            items = await fetch(endpoint).then(res => res.json());
+            const list = await fetch(endpoint).then(res => res.json());
+            items = list.map(i => ({...i, type}));
         }
 
         renderMenu(items, name, minPrice, maxPrice);
@@ -178,7 +179,9 @@
           <div class="menu-details">
             <h3>${item.name}</h3>
             <p>${item.description}</p>
-            <p class="menu-price">${item.price.toLocaleString('vi-VN')} đ</p>
+            <button onclick="orderProduct('${item.type}', ${item.id}, ${item.price}, '${item.name}')">
+              Đặt ${item.type === 'food' ? 'món' : 'thức uống'} – ${item.price.toLocaleString('vi-VN')} đ
+            </button>
           </div>
         </div>
       `;
@@ -204,7 +207,9 @@
             <div class="service-details">
               <div class="service-name">${s.name}</div>
               <div>${s.description || ''}</div>
-              <div class="service-price">${s.price.toLocaleString('vi-VN')} đ</div>
+              <button onclick="orderService(${s.id}, ${s.price}, '${s.name}')">
+                Đặt dịch vụ – ${s.price.toLocaleString('vi-VN')} đ
+              </button>
             </div>
           </div>
         `;
@@ -216,12 +221,82 @@
         }
     }
 
-    // Tải khi trang được load
+    // ======== ĐẶT MÓN & DỊCH VỤ =========
+    async function orderProduct(type, id, price, name) {
+        const orderPayload = {
+            quantity: 1,
+            deliveryTime: new Date().toISOString()
+        };
+        orderPayload[type + "Id"] = id;
+
+        try {
+            const orderRes = await fetch('/api/orders', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(orderPayload)
+            });
+
+            if (!orderRes.ok) throw new Error('Đặt hàng thất bại');
+
+            // Gọi thanh toán
+            await pay(price, name);
+
+        } catch (err) {
+            alert('❌ Không thể đặt hàng: ' + err.message);
+        }
+    }
+
+    async function orderService(id, price, name) {
+        const orderPayload = {
+            supplementId: id,
+            quantity: 1,
+            deliveryTime: new Date().toISOString()
+        };
+
+        try {
+            const orderRes = await fetch('/api/orders', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(orderPayload)
+            });
+
+            if (!orderRes.ok) throw new Error('Đặt dịch vụ thất bại');
+
+            // Gọi thanh toán
+            await pay(price, name);
+
+        } catch (err) {
+            alert('❌ Không thể đặt dịch vụ: ' + err.message);
+        }
+    }
+
+    async function pay(amount, reference) {
+        const paymentInfo = {
+            amount,
+            currency: "VND",
+            paymentMethod: "CREDIT_CARD",
+            paymentReference: reference
+        };
+
+        const res = await fetch('/api/payments/initiate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(paymentInfo)
+        });
+
+        if (res.ok) {
+            alert('✅ Đặt hàng & thanh toán thành công!');
+        } else {
+            alert('⚠️ Đơn đã đặt, nhưng thanh toán thất bại.');
+        }
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
         loadMenu();
         loadSupplements();
     });
 </script>
+
 
 </body>
 </html>
