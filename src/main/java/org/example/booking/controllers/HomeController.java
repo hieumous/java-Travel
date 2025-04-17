@@ -17,6 +17,7 @@ public class HomeController {
         return "home";
     }
 
+<<<<<<< HEAD
     private final ReviewService reviewService;
     @GetMapping("/")
     public String home(Model model) {
@@ -27,5 +28,7 @@ public class HomeController {
         model.addAttribute("reviews", reviews);
         return "home"; // Trả về home.html
     }
+=======
+>>>>>>> 461a9b6 (them mới homstay)
 
 }

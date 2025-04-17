@@ -1,30 +1,29 @@
 package org.example.booking.models;
 
-import java.util.List;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "amenities")
+@Table(name = "Amenity")
 public class Amenity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
     private String name;
+    private String location;
+    private double price;
+    private int days;
+    private int bedrooms;
+    private String locationType;
 
-    @ManyToMany(mappedBy = "amenities")
-    private List<Homestay> homestays;
+    // Dùng kiểu byte[] để lưu ảnh vào DB
+    @Lob
+    @Column(name = "image_data", columnDefinition = "LONGBLOB")
+    private byte[] imageData;
 
-    // Constructor không đối số
     public Amenity() {}
 
-    // Constructor có đối số
-    public Amenity(String name) {
-        this.name = name;
-    }
-
-    // Getters và Setters
     public Long getId() {
         return id;
     }
@@ -41,11 +40,51 @@ public class Amenity {
         this.name = name;
     }
 
-    public List<Homestay> getHomestays() {
-        return homestays;
+    public String getLocation() {
+        return location;
     }
 
-    public void setHomestays(List<Homestay> homestays) {
-        this.homestays = homestays;
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public int getDays() {
+        return days;
+    }
+
+    public void setDays(int days) {
+        this.days = days;
+    }
+
+    public int getBedrooms() {
+        return bedrooms;
+    }
+
+    public void setBedrooms(int bedrooms) {
+        this.bedrooms = bedrooms;
+    }
+
+    public String getLocationType() {
+        return locationType;
+    }
+
+    public void setLocationType(String locationType) {
+        this.locationType = locationType;
+    }
+
+    public byte[] getImageData() {
+        return imageData;
+    }
+
+    public void setImageData(byte[] imageData) {
+        this.imageData = imageData;
     }
 }

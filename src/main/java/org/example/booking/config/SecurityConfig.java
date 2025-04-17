@@ -1,15 +1,19 @@
-/*
+
 package org.example.booking.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+import static org.example.booking.enums.Role.OWNER;
+
+/*
 @Configuration
 public class SecurityConfig {
 
@@ -39,6 +43,7 @@ public class SecurityConfig {
     }
 }
  */
+<<<<<<< HEAD
 package org.example.booking.config;
 
 import org.springframework.context.annotation.Bean;
@@ -67,3 +72,5 @@ public class SecurityConfig {
         return http.build();
     }
 }
+=======
+>>>>>>> 461a9b6 (them mới homstay)

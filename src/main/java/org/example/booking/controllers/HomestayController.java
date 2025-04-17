@@ -34,5 +34,9 @@ public class HomestayController {
                                                         @RequestParam("maxPrice") double maxPrice) {
         List<Homestay> results = homestayService.findByPrice(minPrice, maxPrice);
         return ResponseEntity.ok(results);
-    }
+        }
+
 }
+
+
+

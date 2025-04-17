@@ -1,0 +1,115 @@
+
+
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Thêm Homestay</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f2f2f2;
+            padding: 40px;
+        }
+
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-container h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 15px;
+            background-color: #f9f9f9;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #4CAF50;
+            outline: none;
+            background-color: #fff;
+        }
+
+        .form-group select {
+            appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg fill="%23333" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h2>Thêm Homestay</h2>
+    <form th:action="@{/homestays/save}" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <input type="text" name="name" placeholder="Tên homestay" required>
+        </div>
+        <div class="form-group">
+            <input type="text" name="location" placeholder="Địa điểm" required>
+        </div>
+        <div class="form-group">
+            <input type="number" name="price" placeholder="Giá" required>
+        </div>
+        <div class="form-group">
+            <input type="number" name="days" placeholder="Số ngày" required>
+        </div>
+        <div class="form-group">
+            <input type="number" name="bedrooms" placeholder="Số phòng ngủ" required>
+        </div>
+        <div class="form-group">
+            <select name="locationType" required>
+                <option value="">-- Chọn loại địa điểm --</option>
+                <option value="Near Beach">Gần biển</option>
+                <option value="Near Mountain">Gần núi</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <input type="file" name="image" required>
+        </div>
+        <button type="submit">Lưu</button>
+    </form>
+</div>
+
+</body>
+</html>
+

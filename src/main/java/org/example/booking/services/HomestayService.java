@@ -41,9 +41,18 @@ public class HomestayService {
         return homestayRepository.findAll();
     }
 
+<<<<<<< HEAD
     // Thêm phương thức findById
     public Homestay findById(Long id) {
         return homestayRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Homestay not found with id: " + id));
+=======
+    public Homestay save(Homestay homestay) {
+        return homestayRepository.save(homestay);
+    }
+
+    public List<Homestay> findAll() {
+        return homestayRepository.findAll();
+>>>>>>> 461a9b6 (them mới homstay)
     }
 }
