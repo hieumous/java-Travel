@@ -1,46 +1,136 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<body>
-<div th:replace="masterpage/head::head"></div>
-<div th:replace="masterpage/navbar::navbar"></div>
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${homestay.name}">Chi tiết Homestay</title>
+    <div th:replace="~{masterpage/head :: head}"></div>
 
-<th:block th:fragment="content">
-    <section class="ftco-section">
-        <div class="container">
-            <div class="row justify-content-center pb-4">
-                <div class="col-md-12 heading-section text-center ftco-animate">
-                    <h2 class="mb-4" th:text="${homestay.name}">Tên Homestay</h2>
-                </div>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+
+    <style>
+        body {
+            padding-top: 100px;
+        }
+        .container {
+            margin-bottom: 50px;
+        }
+        .swiper {
+            width: 100%;
+            height: 400px;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .swiper-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .section-title {
+            font-weight: bold;
+            font-size: 24px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        .info-list li {
+            padding: 5px 0;
+        }
+        .review-box {
+            background: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .map-iframe {
+            width: 100%;
+            height: 350px;
+            border-radius: 12px;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+
+<div th:replace="~{masterpage/navbar :: navbar}"></div>
+
+<div class="container" th:if="${homestay != null}">
+    <h2 style="color: white; font-family: 'Dancing Script', cursive;" class="mb-3">Tên Homestay: </h2>
+    <h2 style="color: #FFFFFF" th:text="${homestay.name}" class="mb-3"></h2>
+
+    <div class="swiper mySwiper mb-4">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide" th:each="url : ${homestay.imageUrls}">
+                <img th:src="${url} ?: '/images/default.jpg'" alt="Ảnh Homestay">
             </div>
-            <div class="row">
-                <div class="col-md-6 ftco-animate">
-                    <img th:src="@{'/images/' + ${homestay.imageUrl}}" class="img-fluid" alt="Homestay Image" th:alt="${homestay.name}">
-                </div>
-                <div class="col-md-6 ftco-animate">
-                    <h3>Thông Tin Homestay</h3>
-                    <p><strong>Giá:</strong> <span th:text="'$' + ${homestay.pricePerNight} + '/night'">$300/night</span></p>
-                    <p><strong>Địa điểm:</strong> <span th:text="${homestay.location}">Bali, Indonesia</span></p>
-                    <p><strong>Mô tả:</strong> <span th:text="${homestay.description}">No description available</span></p>
-                    <ul>
-                        <li><span class="flaticon-shower"></span>Phòng tắm: 2</li>
-                        <li><span class="flaticon-king-size"></span>Giường: 3</li>
-                        <li><span class="flaticon-sun-umbrella"></span>Tiện ích: Near Beach</li>
-                    </ul>
-                    <a th:href="@{/booking?homestayId=${homestay.id}}" class="btn btn-primary py-3 px-5 mt-3">Đặt Phòng Ngay</a>
-                </div>
-            </div>
-            <div class="row mt-5">
-                <div class="col-md-12 ftco-animate">
-                    <div th:fragment="extra-content">
-                        <!-- review, menu service -->
-                    </div>
-                </div>
+            <div class="swiper-slide" th:if="${#lists.isEmpty(homestay.imageUrls)}">
+                <img src="/images/default.jpg" alt="Ảnh mặc định">
             </div>
         </div>
-    </section>
-</th:block>
+        <div class="swiper-pagination"></div>
+    </div>
 
-<div th:replace="masterpage/loader::loader"></div>
-<div th:replace="masterpage/footer::footer"></div>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="section-title">Thông tin Homestay</div>
+            <ul class="info-list">
+                <li><strong>Giá:</strong> <span th:text="'$' + ${homestay.pricePerNight} + '/đêm'"></span></li>
+                <li><strong>Địa điểm:</strong> <span th:text="${homestay.location}"></span></li>
+                <li><strong>Mô tả:</strong> <span th:text="${homestay.description}"></span></li>
+            </ul>
+
+            <div class="section-title">Tiện nghi</div>
+            <ul class="info-list" th:each="amenity : ${homestay.amenities}">
+                <li th:text="'✅ ' + ${amenity.name}"></li>
+            </ul>
+
+            <div class="section-title">Vị trí trên bản đồ</div>
+            <iframe class="map-iframe"
+                    th:src="'https://www.google.com/maps?q=' + ${#strings.replace(homestay.location,' ','+')} + '&output=embed'">
+            </iframe>
+
+            <div class="section-title">Đánh giá từ khách</div>
+            <div class="review-box">
+                <strong>Nguyễn Văn A</strong> ⭐⭐⭐⭐⭐
+                <p>Rất tuyệt vời! Phòng sạch sẽ, chủ thân thiện.</p>
+            </div>
+            <div class="review-box">
+                <strong>Trần Thị B</strong> ⭐⭐⭐⭐☆
+                <p>Vị trí đẹp, gần biển. Sẽ quay lại.</p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="section-title">Đặt phòng ngay</div>
+            <div class="card p-3">
+                <h4 th:text="'$' + ${homestay.pricePerNight} + '/đêm'"></h4>
+                <form th:action="@{/booking}" method="get">
+                    <input type="hidden" name="homestayId" th:value="${homestay.id}">
+                    <button class="btn btn-primary w-100 mt-3">Đặt Phòng</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:if="${homestay == null}" class="container mt-5">
+    <div class="alert alert-danger text-center">
+        <h4>Homestay không tồn tại</h4>
+        <a href="/home" class="btn btn-outline-primary mt-3">Quay lại trang chủ</a>
+    </div>
+</div>
+
+<div th:replace="~{masterpage/footer :: footer}"></div>
+
+<script>
+    const swiper = new Swiper(".mySwiper", {
+        loop: true,
+        pagination: {
+            el: ".swiper-pagination",
+            clickable: true,
+        },
+    });
+</script>
+
 </body>
 </html>

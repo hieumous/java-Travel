@@ -1,62 +1,52 @@
 package org.example.booking.controllers;
 
-import org.example.booking.models.Amenity;
-import org.example.booking.services.AmenityService;
+import org.example.booking.models.Homestay;
+import org.example.booking.services.HomestayService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.ui.Model;
 
-import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 @Controller
-@RequestMapping("/homestays")
+@RequestMapping("/home")
 public class Render {
 
     @Autowired
-    private AmenityService amenityService;
+    private HomestayService homestayService;
 
-    // Hiển thị danh sách
     @GetMapping
     public String listHomestays(Model model) {
-        List<Amenity> homestays = amenityService.findAll();
+        List<Homestay> homestays = homestayService.findAll();
         model.addAttribute("homestays", homestays);
-        return "home"; // trả về file home.html
+        return "home";
     }
 
-    // Form thêm mới
+    @GetMapping("/homestay/{id}")
+    public String showHomestayDetail(@PathVariable Long id, Model model) {
+        Homestay homestay = homestayService.findById(id);
+        model.addAttribute("homestay", homestay);
+        return "homestay-detail";
+    }
+
     @GetMapping("/add")
     public String showAddForm(Model model) {
-        model.addAttribute("homestay", new Amenity());
-        return "add-homestay"; // form bạn đã thiết kế
+        model.addAttribute("homestay", new Homestay());
+        return "add-homestay";
     }
 
-    // Xử lý lưu homestay và ảnh vào database
     @PostMapping("/save")
-    public String saveHomestay(@ModelAttribute Amenity amenity,
-                               @RequestParam("image") MultipartFile file) {
-        if (!file.isEmpty()) {
-            try {
-                // Lưu nội dung ảnh vào cột imageData trong DB
-                byte[] imageBytes = file.getBytes();
-                amenity.setImageData(imageBytes);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+    public String saveHomestay(@ModelAttribute Homestay homestay,
+                               @RequestParam("images") MultipartFile[] files) {
+        if (files != null && files.length > 0) {
+            List<MultipartFile> fileList = Arrays.asList(files);
+            List<String> imageUrls = homestayService.uploadImage(fileList);
+            homestay.setImageUrls(imageUrls);
         }
-
-        // Lưu thông tin homestay vào cơ sở dữ liệu
-        amenityService.save(amenity);
-
-        return "redirect:/homestays"; // Trả về đúng route danh sách
-    }
-
-    @GetMapping("/image/{id}")
-    @ResponseBody
-    public byte[] getImage(@PathVariable Long id) {
-        Amenity amenity = amenityService.findById(id);
-        return amenity.getImageData();
+        homestayService.save(homestay);
+        return "redirect:/home";
     }
 }

@@ -3,6 +3,7 @@ package org.example.booking.models;
 import jakarta.persistence.*;
 import org.example.booking.enums.HomestayStatus;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -24,8 +25,9 @@ public class Homestay {
     @Column(nullable = false)
     private double pricePerNight = 0;
 
-    @Column(nullable = false)
-    private String imageUrl;
+    @ElementCollection
+    @Column(columnDefinition = "TEXT")
+    private List<String> imageUrls = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -43,19 +45,19 @@ public class Homestay {
     private List<Amenity> amenities;
 
     @ManyToOne
-    @JoinColumn(name = "owner_id") // Cột khóa ngoại trong bảng homestays
-    private User owner; // Thêm trường owner để liên kết với User
+    @JoinColumn(name = "owner_id")
+    private User owner;
 
     // Constructor không đối số
     public Homestay() {}
 
-    // Constructor có đối số (cập nhật để bao gồm owner)
-    public Homestay(String name, String location, String description, double pricePerNight, String imageUrl, User owner) {
+    // Constructor có đối số
+    public Homestay(String name, String location, String description, double pricePerNight, List<String> imageUrls, User owner) {
         this.name = name;
         this.location = location;
         this.description = description;
         this.pricePerNight = pricePerNight;
-        this.imageUrl = imageUrl;
+        this.imageUrls = imageUrls != null ? imageUrls : new ArrayList<>();
         this.owner = owner;
     }
 
@@ -100,12 +102,12 @@ public class Homestay {
         this.pricePerNight = pricePerNight;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public List<String> getImageUrls() {
+        return imageUrls;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setImageUrls(List<String> imageUrls) {
+        this.imageUrls = imageUrls != null ? imageUrls : new ArrayList<>();
     }
 
     public HomestayStatus getStatus() {
@@ -138,9 +140,5 @@ public class Homestay {
 
     public void setOwner(User owner) {
         this.owner = owner;
-    }
-
-    public void setImageUrls(List<String> imageUrls) {
-        // Nếu bạn cần xử lý danh sách imageUrls, có thể thay imageUrl thành List<String>
     }
 }

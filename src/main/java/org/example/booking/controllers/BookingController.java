@@ -2,6 +2,7 @@ package org.example.booking.controllers;
 
 import org.example.booking.models.Booking;
 import org.example.booking.services.BookingService;
+import org.example.booking.services.EmailService;
 import org.example.booking.services.HomestayService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,11 +14,15 @@ import java.time.format.DateTimeFormatter;
 
 @Controller
 public class BookingController {
+
     @Autowired
     private BookingService bookingService;
 
     @Autowired
     private HomestayService homestayService;
+
+    @Autowired
+    private EmailService emailService; // Thêm service gửi email
 
     // Hiển thị form đặt phòng
     @GetMapping("/booking")
@@ -37,6 +42,7 @@ public class BookingController {
             @RequestParam String checkinDate,
             @RequestParam String checkoutDate,
             Model model) {
+
         try {
             // Chuyển đổi ngày từ String sang LocalDate
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -47,6 +53,15 @@ public class BookingController {
             Booking booking = bookingService.createBookingFromForm(
                     homestayId, username, email, phone, checkIn, checkOut
             );
+
+            // Gửi email xác nhận đặt phòng
+            String subject = "Xác nhận đặt phòng tại Homestay";
+            String body = "Xin chào " + username + ",\n\n"
+                    + "Bạn đã đặt phòng thành công tại Homestay #" + homestayId + ".\n"
+                    + "Thời gian: từ " + checkinDate + " đến " + checkoutDate + ".\n\n"
+                    + "Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi!";
+
+            emailService.sendSimpleEmail(email, subject, body);
 
             return "redirect:/booking-success";
         } catch (Exception e) {

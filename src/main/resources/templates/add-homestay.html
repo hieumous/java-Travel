@@ -1,8 +1,5 @@
-
-
-
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Thêm Homestay</title>
@@ -33,6 +30,7 @@
         }
 
         .form-group input,
+        .form-group textarea,
         .form-group select {
             width: 100%;
             padding: 12px 15px;
@@ -44,6 +42,7 @@
         }
 
         .form-group input:focus,
+        .form-group textarea:focus,
         .form-group select:focus {
             border-color: #4CAF50;
             outline: none;
@@ -80,31 +79,21 @@
 
 <div class="form-container">
     <h2>Thêm Homestay</h2>
-    <form th:action="@{/homestays/save}" method="post" enctype="multipart/form-data">
+    <form th:action="@{/home/save}" th:object="${homestay}" method="post" enctype="multipart/form-data">
         <div class="form-group">
-            <input type="text" name="name" placeholder="Tên homestay" required>
+            <input type="text" th:field="*{name}" placeholder="Tên homestay" required>
         </div>
         <div class="form-group">
-            <input type="text" name="location" placeholder="Địa điểm" required>
+            <input type="text" th:field="*{location}" placeholder="Địa điểm" required>
         </div>
         <div class="form-group">
-            <input type="number" name="price" placeholder="Giá" required>
+            <textarea th:field="*{description}" placeholder="Mô tả homestay" rows="5"></textarea>
         </div>
         <div class="form-group">
-            <input type="number" name="days" placeholder="Số ngày" required>
+            <input type="number" th:field="*{pricePerNight}" placeholder="Giá mỗi đêm" step="0.01" required>
         </div>
         <div class="form-group">
-            <input type="number" name="bedrooms" placeholder="Số phòng ngủ" required>
-        </div>
-        <div class="form-group">
-            <select name="locationType" required>
-                <option value="">-- Chọn loại địa điểm --</option>
-                <option value="Near Beach">Gần biển</option>
-                <option value="Near Mountain">Gần núi</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <input type="file" name="image" required>
+            <input type="file" name="images" multiple required>
         </div>
         <button type="submit">Lưu</button>
     </form>
@@ -112,4 +101,3 @@
 
 </body>
 </html>
-
