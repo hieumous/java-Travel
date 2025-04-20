@@ -25,7 +25,7 @@ public class Homestay {
     @Column(nullable = false)
     private double pricePerNight = 0;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @Column(columnDefinition = "TEXT")
     private List<String> imageUrls = new ArrayList<>();
 

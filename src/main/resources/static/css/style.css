@@ -9536,3 +9536,31 @@ textarea.form-control {
 #ftco-navbar {
   background-color: #32579c !important;
 }
+.swiper {
+  width: 100%;
+  padding: 20px 0;
+}
+
+.swiper-wrapper {
+  display: flex;
+}
+
+.swiper-slide {
+  width: auto;
+  flex-shrink: 0;
+}
+
+.project-wrap {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  height: 100%;
+}
+
+.img {
+  display: block;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}

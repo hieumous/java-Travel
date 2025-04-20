@@ -24,7 +24,12 @@ public class Render {
         model.addAttribute("homestays", homestays);
         return "home";
     }
-
+    @GetMapping("/ManageHomestays")
+    public String manageHomestays(Model model) {
+        List<Homestay> homestays = homestayService.findAll();
+        model.addAttribute("homestays", homestays);
+        return "ManageHomestays"; // tên file .html bạn muốn render
+    }
     @GetMapping("/homestay/{id}")
     public String showHomestayDetail(@PathVariable Long id, Model model) {
         Homestay homestay = homestayService.findById(id);

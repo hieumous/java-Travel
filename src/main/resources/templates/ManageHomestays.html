@@ -113,41 +113,30 @@
             <tr>
                 <th>Tên Homestay</th>
                 <th>Địa điểm</th>
-                <th>Giá mỗi đêm</th>
                 <th>Mô tả</th>
-                <th>Tiện ích</th>
-                <th>Trạng thái</th>
-                <th>Hành động</th>
+                <th>Giá mỗi đêm</th>
+                <th>Ảnh</th>
             </tr>
             </thead>
             <tbody>
             <tr th:each="homestay : ${homestays}">
-                <td th:text="${homestay.name}"></td>
-                <td th:text="${homestay.location}"></td>
-                <td th:text="|${#numbers.formatDecimal(homestay.pricePerNight, 0, 'COMMA', 2, 'POINT')} VNĐ|"></td>
-                <td th:text="${homestay.description} ?: 'Không có mô tả'"></td>
-                <td th:text="${homestay.amenities} ? ${#strings.join(homestay.amenities, ', ')} : 'Không có tiện ích'"></td>
+                <td th:text="${homestay.name}">Tên</td>
+                <td th:text="${homestay.location}">Địa điểm</td>
+                <td th:text="${homestay.description}">Mô tả</td>
+                <td th:text="|${#numbers.formatDecimal(homestay.pricePerNight, 0, 'COMMA', 2, 'POINT')} VNĐ|">Giá</td>
                 <td>
-                    <span th:class="${homestay.status == 'ACTIVE'} ? 'status-active' : ${homestay.status == 'PENDING'} ? 'status-pending' : 'status-inactive'"
-                          th:text="${homestay.status}"></span>
-                </td>
-                <td class="action-buttons">
-                    <a th:href="@{/home/edit/{id}(id=${homestay.id})}">
-                        <button style="background: gold; color: black;">Chỉnh sửa</button>
-                    </a>
-                    <form th:action="@{/home/delete/{id}(id=${homestay.id})}" method="post" style="display:inline;">
-                        <button type="submit" style="background: red; color: white;"
-                                onclick="return confirm('Bạn có chắc chắn muốn xóa homestay này?');">
-                            Xóa
-                        </button>
-                    </form>
-                    <a th:href="@{/home/bookings/{id}(id=${homestay.id})}">
-                        <button style="background: deepskyblue; color: white;">Xem đặt phòng</button>
-                    </a>
+                    <div th:if="${homestay.imageUrls != null && !homestay.imageUrls.isEmpty()}">
+                        <img th:src="@{${homestay.imageUrls[0]}}" alt="Ảnh homestay" style="width: 120px; height: auto; border-radius: 10px;">
+                    </div>
+                    <div th:if="${homestay.imageUrls == null || homestay.imageUrls.isEmpty()}">
+                        Không có ảnh
+                    </div>
                 </td>
             </tr>
             </tbody>
         </table>
+
+
 
         <br>
         <a th:href="@{/home/add}">
