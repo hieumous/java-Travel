@@ -52,4 +52,8 @@ public class HomestayService {
     public List<String> uploadImage(List<MultipartFile> files) {
         return imageService.uploadImages(files);
     }
+
+    public void deleteById(Long id) {
+        homestayRepository.deleteById(id);
+    }
 }

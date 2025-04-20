@@ -47,6 +47,18 @@ public class Render {
             homestay.setImageUrls(imageUrls);
         }
         homestayService.save(homestay);
-        return "redirect:/home";
+
+        return "redirect:/ManageHomestays";
+    }
+    @PostMapping("/delete/{id}")
+    public String deleteHomestay(@PathVariable Long id) {
+        homestayService.deleteById(id);
+        return "redirect:/ManageHomestays";
+    }
+    @GetMapping("/edit/{id}")
+    public String showEditForm(@PathVariable Long id, Model model) {
+        Homestay amenity = homestayService.findById(id);
+        model.addAttribute("homestay", amenity);
+        return "add-homestay";
     }
 }
