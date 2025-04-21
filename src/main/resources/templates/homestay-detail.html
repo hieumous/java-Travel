@@ -60,10 +60,10 @@
 
     <div class="swiper mySwiper mb-4">
         <div class="swiper-wrapper">
-            <div class="swiper-slide" th:each="url : ${homestay.imageUrls}">
-                <img th:src="${url} ?: '/images/default.jpg'" alt="Ảnh Homestay">
+            <div class="swiper-slide" th:if="${homestay.image != null}">
+                <img th:src="${homestay.image}" alt="Ảnh Homestay">
             </div>
-            <div class="swiper-slide" th:if="${#lists.isEmpty(homestay.imageUrls)}">
+            <div class="swiper-slide" th:if="${homestay.image == null}">
                 <img src="/images/default.jpg" alt="Ảnh mặc định">
             </div>
         </div>

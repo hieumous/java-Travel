@@ -29,9 +29,11 @@ public class HomestayService {
         return homestayRepository.findByPricePerNightBetween(minPrice, maxPrice);
     }
 
-    public Homestay registerHomestay(Homestay homestay, List<MultipartFile> images) {
-        List<String> imageUrls = imageService.uploadImages(images);
-        homestay.setImageUrls(imageUrls);
+    public Homestay registerHomestay(Homestay homestay, MultipartFile image) {
+        if (image != null && !image.isEmpty()) {
+            String base64Image = imageService.convertToBase64(image);
+            homestay.setImage(base64Image);
+        }
         homestay.setStatus(HomestayStatus.PENDING);
         return homestayRepository.save(homestay);
     }
@@ -47,10 +49,6 @@ public class HomestayService {
 
     public Homestay save(Homestay homestay) {
         return homestayRepository.save(homestay);
-    }
-
-    public List<String> uploadImage(List<MultipartFile> files) {
-        return imageService.uploadImages(files);
     }
 
     public void deleteById(Long id) {

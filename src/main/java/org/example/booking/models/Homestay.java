@@ -25,9 +25,9 @@ public class Homestay {
     @Column(nullable = false)
     private double pricePerNight = 0;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @Column(columnDefinition = "TEXT")
-    private List<String> imageUrls = new ArrayList<>();
+
+    @Column(columnDefinition = "LONGTEXT")
+    private String image;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -52,12 +52,12 @@ public class Homestay {
     public Homestay() {}
 
     // Constructor có đối số
-    public Homestay(String name, String location, String description, double pricePerNight, List<String> imageUrls, User owner) {
+    public Homestay(String name, String location, String description, double pricePerNight, String image, User owner) {
         this.name = name;
         this.location = location;
         this.description = description;
         this.pricePerNight = pricePerNight;
-        this.imageUrls = imageUrls != null ? imageUrls : new ArrayList<>();
+        this.image = image;
         this.owner = owner;
     }
 
@@ -102,12 +102,12 @@ public class Homestay {
         this.pricePerNight = pricePerNight;
     }
 
-    public List<String> getImageUrls() {
-        return imageUrls;
+    public String getImage() {
+        return image;
     }
 
-    public void setImageUrls(List<String> imageUrls) {
-        this.imageUrls = imageUrls != null ? imageUrls : new ArrayList<>();
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public HomestayStatus getStatus() {

@@ -8,7 +8,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Controller
@@ -45,25 +44,21 @@ public class Render {
 
     @PostMapping("/save")
     public String saveHomestay(@ModelAttribute Homestay homestay,
-                               @RequestParam("images") MultipartFile[] files) {
-        if (files != null && files.length > 0) {
-            List<MultipartFile> fileList = Arrays.asList(files);
-            List<String> imageUrls = homestayService.uploadImage(fileList);
-            homestay.setImageUrls(imageUrls);
-        }
-        homestayService.save(homestay);
-
+                               @RequestParam("imageFile") MultipartFile file) {
+        homestayService.registerHomestay(homestay, file);
         return "redirect:/ManageHomestays";
     }
+
     @PostMapping("/delete/{id}")
     public String deleteHomestay(@PathVariable Long id) {
         homestayService.deleteById(id);
         return "redirect:/ManageHomestays";
     }
+
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable Long id, Model model) {
-        Homestay amenity = homestayService.findById(id);
-        model.addAttribute("homestay", amenity);
+        Homestay homestay = homestayService.findById(id);
+        model.addAttribute("homestay", homestay);
         return "add-homestay";
     }
 }

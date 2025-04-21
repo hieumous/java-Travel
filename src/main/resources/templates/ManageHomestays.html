@@ -91,6 +91,12 @@
             border-radius: 5px;
             cursor: pointer;
         }
+
+        .error {
+            color: red;
+            margin-bottom: 15px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -107,7 +113,7 @@
     <div id="homestay" class="section active">
         <h3 style="background-color: #007bff; color: white; padding: 10px;">1. Danh sách Homestay đang sở hữu</h3>
         <p>Hiển thị các homestay bạn đã đăng ký:</p>
-
+        <div th:if="${error}" class="error" th:text="${error}"></div>
         <table>
             <thead>
             <tr>
@@ -132,6 +138,9 @@
                         Không có ảnh
                     </div>
                 </td>
+            </tr>
+            <tr th:if="${homestays == null or homestays.isEmpty()}">
+                <td colspan="7" style="text-align: center;">Chưa có homestay nào.</td>
             </tr>
             </tbody>
         </table>

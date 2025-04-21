@@ -4,32 +4,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Base64;
 
 @Service
 public class ImageService {
 
-    private static final String UPLOAD_DIR = "src/main/resources/static/uploads/";
-
-    public List<String> uploadImages(List<MultipartFile> files) {
-        List<String> imageUrls = new ArrayList<>();
+    public String convertToBase64(MultipartFile file) {
         try {
-            Files.createDirectories(Paths.get(UPLOAD_DIR));
-            for (MultipartFile file : files) {
-                if (!file.isEmpty()) {
-                    String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-                    Path filePath = Paths.get(UPLOAD_DIR, fileName);
-                    Files.write(filePath, file.getBytes());
-                    imageUrls.add("/uploads/" + fileName);
-                }
+            if (file != null && !file.isEmpty()) {
+                byte[] fileBytes = file.getBytes();
+                return "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(fileBytes);
             }
+            return null;
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Failed to convert image to Base64: " + e.getMessage(), e);
         }
-        return imageUrls;
     }
 }
