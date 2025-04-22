@@ -1,10 +1,14 @@
 package org.example.booking.controllers;
 
+import org.example.booking.enums.BookingStatus;
 import org.example.booking.models.Booking;
 import org.example.booking.models.Homestay;
+import org.example.booking.models.PaymentInfo;
+import org.example.booking.models.PaymentStatus;
 import org.example.booking.services.BookingService;
 import org.example.booking.services.EmailService;
 import org.example.booking.services.HomestayService;
+import org.example.booking.services.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 
 @Controller
 public class BookingController {
@@ -24,6 +29,9 @@ public class BookingController {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private PaymentService paymentService;
 
     // Hiển thị form đặt phòng
     @GetMapping("/booking")
@@ -46,38 +54,153 @@ public class BookingController {
 
         try {
             Homestay homestay = homestayService.findById(homestayId);
-            String homestayName = homestay.getName(); // hoặc getTitle() nếu bạn dùng tên khác
+            if (homestay == null) {
+                throw new IllegalArgumentException("Homestay not found.");
+            }
 
-            // Chuyển đổi ngày từ String sang LocalDate
+            // Chuyển đổi ngày
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDate checkIn = LocalDate.parse(checkinDate, formatter);
             LocalDate checkOut = LocalDate.parse(checkoutDate, formatter);
+
+            // Tính số tiền và số đêm
+            double amount = bookingService.calculateTotalAmount(homestayId, checkIn, checkOut);
+            long numberOfNights = ChronoUnit.DAYS.between(checkIn, checkOut);
 
             // Tạo booking
             Booking booking = bookingService.createBookingFromForm(
                     homestayId, username, email, phone, checkIn, checkOut
             );
 
-            // Gửi email xác nhận đặt phòng có mã QR
-            String subject = "Xác nhận đặt phòng HomeStay " + homestayName;
-
-            String body = "Xin chào " + username + ",<br><br>"
-                    + "Bạn đã đặt HomeStay <strong> " + homestayName + " thành công</strong>.<br>"
-                    + "Thời gian: từ <b>" + checkinDate + "</b> đến <b>" + checkoutDate + "</b>.<br><br>"
-                    + "Vui lòng quét mã QR bên dưới để xác nhận khi đến nơi.<br>"
-                    + "Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi!";
-
-            String qrContent = "Homestay: " + homestayName + "\nTên: " + username
-                    + "\nCheck-in: " + checkinDate + "\nCheck-out: " + checkoutDate;
-
-
-            emailService.sendEmailWithQR(email, subject, body, qrContent);
-
-            return "redirect:/booking-success";
+            // Chuyển hướng đến trang thanh toán
+            model.addAttribute("bookingId", booking.getId());
+            model.addAttribute("homestayId", homestayId);
+            model.addAttribute("name", homestay.getName());
+            model.addAttribute("image", homestay.getImage());
+            model.addAttribute("pricePerNight", homestay.getPricePerNight());
+            model.addAttribute("location", homestay.getLocation());
+            model.addAttribute("amenities", homestay.getAmenities());
+            model.addAttribute("checkInDate", checkIn.toString());
+            model.addAttribute("checkOutDate", checkOut.toString());
+            model.addAttribute("numberOfNights", numberOfNights);
+            model.addAttribute("amount", amount);
+            model.addAttribute("currency", "USD");
+            return "payment";
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
             model.addAttribute("homestayId", homestayId);
             return "booking";
+        }
+    }
+
+    // Hiển thị trang thanh toán
+    @GetMapping("/payment")
+    public String showPaymentForm(
+            @RequestParam Long bookingId,
+            @RequestParam Long homestayId,
+            @RequestParam String name,
+            @RequestParam String image,
+            @RequestParam double pricePerNight,
+            @RequestParam String location,
+            @RequestParam String checkInDate,
+            @RequestParam String checkOutDate,
+            @RequestParam long numberOfNights,
+            @RequestParam double amount,
+            @RequestParam String currency,
+            Model model) {
+        model.addAttribute("bookingId", bookingId);
+        model.addAttribute("homestayId", homestayId);
+        model.addAttribute("name", name);
+        model.addAttribute("image", image);
+        model.addAttribute("pricePerNight", pricePerNight);
+        model.addAttribute("location", location);
+        model.addAttribute("amenities", homestayService.findById(homestayId).getAmenities());
+        model.addAttribute("checkInDate", checkInDate);
+        model.addAttribute("checkOutDate", checkOutDate);
+        model.addAttribute("numberOfNights", numberOfNights);
+        model.addAttribute("amount", amount);
+        model.addAttribute("currency", currency);
+        return "payment";
+    }
+
+    // Xử lý thanh toán giả lập
+    @PostMapping("/simulate-payment")
+    public String simulatePayment(
+            @RequestParam Long bookingId,
+            @RequestParam Long homestayId,
+            @RequestParam double amount,
+            @RequestParam String currency,
+            @RequestParam String paymentMethod,
+            Model model) {
+        try {
+            Homestay homestay = homestayService.findById(homestayId);
+            if (homestay == null) {
+                throw new IllegalArgumentException("Homestay not found.");
+            }
+            Booking booking = bookingService.updateBookingStatus(bookingId, BookingStatus.PENDING, false);
+
+            // Tạo PaymentInfo
+            PaymentInfo paymentInfo = new PaymentInfo();
+            paymentInfo.setBookingId(bookingId);
+            paymentInfo.setHomestayId(homestayId);
+            paymentInfo.setAmount(amount);
+            paymentInfo.setCurrency(currency);
+            paymentInfo.setPaymentMethod(org.example.booking.enums.PaymentMethod.valueOf(paymentMethod));
+            paymentInfo.setUser(booking.getUser());
+
+            // Gọi thanh toán giả lập
+            PaymentStatus paymentStatus = paymentService.processPayment(paymentInfo);
+
+            if (paymentStatus.getStatus() == PaymentStatus.PaymentStatusType.SUCCESSFUL) {
+                // Cập nhật booking
+                bookingService.updateBookingStatus(bookingId, BookingStatus.CONFIRMED, true);
+
+                // Gửi email xác nhận
+                String subject = "Xác nhận đặt phòng HomeStay " + homestay.getName();
+                String body = "Xin chào " + booking.getUser().getUsername() + ",<br><br>"
+                        + "Bạn đã đặt HomeStay <strong>" + homestay.getName() + "</strong> thành công.<br>"
+                        + "Thời gian: từ <b>" + booking.getCheckInDate() + "</b> đến <b>" + booking.getCheckOutDate() + "</b>.<br>"
+                        + "Thanh toán: <b>" + amount + " " + currency + "</b> (Thành công).<br><br>"
+                        + "Vui lòng quét mã QR bên dưới để xác nhận khi đến nơi.<br>"
+                        + "Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi!";
+                String qrContent = "Homestay: " + homestay.getName() + "\nTên: " + booking.getUser().getUsername()
+                        + "\nCheck-in: " + booking.getCheckInDate() + "\nCheck-out: " + booking.getCheckOutDate();
+
+                emailService.sendEmailWithQR(booking.getUser().getEmail(), subject, body, qrContent);
+                return "redirect:/booking-success";
+            } else {
+                model.addAttribute("error", "Thanh toán thất bại: " + paymentStatus.getErrorMessage());
+                model.addAttribute("bookingId", bookingId);
+                model.addAttribute("homestayId", homestayId);
+                model.addAttribute("name", homestay.getName());
+                model.addAttribute("image", homestay.getImage());
+                model.addAttribute("pricePerNight", homestay.getPricePerNight());
+                model.addAttribute("location", homestay.getLocation());
+                model.addAttribute("amenities", homestay.getAmenities());
+                model.addAttribute("checkInDate", booking.getCheckInDate().toString());
+                model.addAttribute("checkOutDate", booking.getCheckOutDate().toString());
+                model.addAttribute("numberOfNights", ChronoUnit.DAYS.between(booking.getCheckInDate(), booking.getCheckOutDate()));
+                model.addAttribute("amount", amount);
+                model.addAttribute("currency", currency);
+                return "payment";
+            }
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("bookingId", bookingId);
+            model.addAttribute("homestayId", homestayId);
+            model.addAttribute("name", homestayService.findById(homestayId).getName());
+            model.addAttribute("image", homestayService.findById(homestayId).getImage());
+            model.addAttribute("pricePerNight", homestayService.findById(homestayId).getPricePerNight());
+            model.addAttribute("location", homestayService.findById(homestayId).getLocation());
+            model.addAttribute("amenities", homestayService.findById(homestayId).getAmenities());
+            model.addAttribute("checkInDate", bookingService.updateBookingStatus(bookingId, BookingStatus.PENDING, false).getCheckInDate().toString());
+            model.addAttribute("checkOutDate", bookingService.updateBookingStatus(bookingId, BookingStatus.PENDING, false).getCheckOutDate().toString());
+            model.addAttribute("numberOfNights", ChronoUnit.DAYS.between(
+                    bookingService.updateBookingStatus(bookingId, BookingStatus.PENDING, false).getCheckInDate(),
+                    bookingService.updateBookingStatus(bookingId, BookingStatus.PENDING, false).getCheckOutDate()));
+            model.addAttribute("amount", amount);
+            model.addAttribute("currency", currency);
+            return "payment";
         }
     }
 

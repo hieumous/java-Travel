@@ -6,6 +6,7 @@ import org.example.booking.repositories.PaymentRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
+
 @Service
 public class PaymentService {
     private final PaymentRepository paymentRepository;
@@ -14,17 +15,10 @@ public class PaymentService {
         this.paymentRepository = paymentRepository;
     }
 
-    /**
-     * Process a payment using the provided payment information.
-     *
-     * @param paymentInfo The payment information.
-     * @return The payment status.
-     */
     public PaymentStatus processPayment(PaymentInfo paymentInfo) {
-        // Generate a unique transaction ID
         String transactionId = UUID.randomUUID().toString();
 
-        // Create a new payment status
+        // Tạo PaymentStatus
         PaymentStatus paymentStatus = new PaymentStatus();
         paymentStatus.setId(UUID.randomUUID().toString());
         paymentStatus.setTransactionId(transactionId);
@@ -32,42 +26,39 @@ public class PaymentService {
         paymentStatus.setCurrency(paymentInfo.getCurrency());
         paymentStatus.setPaymentMethod(paymentInfo.getPaymentMethod().toString());
         paymentStatus.setPaymentReference(paymentInfo.getPaymentReference());
+        paymentStatus.setUser(paymentInfo.getUser());
         paymentStatus.setStatus(PaymentStatus.PaymentStatusType.PENDING);
 
-        // Attempt to process the payment
-        try {
-            // Call the payment gateway to process the payment
-            boolean paymentSuccessful = processPaymentWithGateway(paymentInfo);
-
-            // Update the payment status based on the result
-            if (paymentSuccessful) {
-                paymentStatus.setStatus(PaymentStatus.PaymentStatusType.SUCCESSFUL);
-            } else {
-                paymentStatus.setStatus(PaymentStatus.PaymentStatusType.FAILED);
-                paymentStatus.setErrorMessage("Payment processing failed.");
-            }
-        } catch (Exception e) {
-            // Handle any exceptions that occurred during payment processing
+        // Giả lập kết quả thanh toán
+        boolean paymentSuccessful = simulatePayment(paymentInfo.getPaymentMethod().toString());
+        if (paymentSuccessful) {
+            paymentStatus.setStatus(PaymentStatus.PaymentStatusType.SUCCESSFUL);
+            paymentStatus.setPaymentGatewayId("SIMULATED_GATEWAY");
+            paymentStatus.setPaymentGatewayTransactionId("SIM_TX_" + transactionId);
+            paymentStatus.setPaymentGatewayResponseCode("00");
+            paymentStatus.setPaymentGatewayResponseMessage("Payment simulated successfully");
+        } else {
             paymentStatus.setStatus(PaymentStatus.PaymentStatusType.FAILED);
-            paymentStatus.setErrorMessage(e.getMessage());
+            paymentStatus.setErrorMessage("Simulated payment failed");
+            paymentStatus.setPaymentGatewayResponseCode("99");
+            paymentStatus.setPaymentGatewayResponseMessage("Payment simulation failed");
         }
 
-        // Save the payment status to the repository
+        // Lưu PaymentStatus
         paymentRepository.save(paymentStatus);
-
         return paymentStatus;
     }
 
-
-    /**
-     * Processes the payment using the payment gateway.
-     *
-     * @param paymentInfo The payment information.
-     * @return true if the payment was successful, false otherwise.
-     */
-    private boolean processPaymentWithGateway(PaymentInfo paymentInfo) {
-        // Call the payment gateway API to process the payment
-        // and return the result
-        return true; // Placeholder for actual payment processing logic
+    // Phương thức giả lập thanh toán với tỷ lệ thành công/thất bại
+    private boolean simulatePayment(String paymentMethod) {
+        double successRate;
+        if ("MOMO".equals(paymentMethod)) {
+            successRate = 0.7; // 70% thành công cho MoMo
+        } else if ("VNPAY".equals(paymentMethod)) {
+            successRate = 0.7; // 70% thành công cho VNPay
+        } else {
+            successRate = 0.5;
+        }
+        return Math.random() < successRate;
     }
 }
