@@ -7,8 +7,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
-
 @Controller
 public class AuthController {
 
@@ -16,36 +14,29 @@ public class AuthController {
     private UserService userService;
 
     @GetMapping("/login")
-    public String showLoginForm() {
-        return "login"; // Trả về login.html
-    }
-
-    @PostMapping("/login")
-    public String loginUser(@RequestParam String username,
-                            @RequestParam String password,
-                            Model model) {
-        Optional<User> optionalUser = userService.findByUsername(username);
-        if (optionalUser.isPresent() && optionalUser.get().getPassword().equals(password)) {
-            model.addAttribute("loggedInUser", optionalUser.get());
-            return "home"; // Chuyển về trang chủ nếu đăng nhập thành công
-        } else {
+    public String showLoginForm(@RequestParam(value = "error", required = false) String error,
+                                @RequestParam(value = "logout", required = false) String logout,
+                                Model model) {
+        if (error != null) {
             model.addAttribute("error", "Sai tên đăng nhập hoặc mật khẩu!");
-            return "login";
         }
+        if (logout != null) {
+            model.addAttribute("message", "Bạn đã đăng xuất thành công!");
+        }
+        return "login"; // Trả về login.html
     }
 
     @GetMapping("/register")
     public String showRegisterForm(Model model) {
         model.addAttribute("user", new User());
-        return "register";
+        return "register"; // Trả về register.html
     }
 
     @PostMapping("/register")
-    public String registerUser(@ModelAttribute("user") User user,
-                               Model model) {
+    public String registerUser(@ModelAttribute("user") User user, Model model) {
         try {
             userService.registerUser(user);
-            return "redirect:/login";
+            return "redirect:/login?registered=true";
         } catch (RuntimeException e) {
             model.addAttribute("error", e.getMessage());
             return "register";

@@ -1,6 +1,7 @@
 package org.example.booking.controllers;
 
 import org.example.booking.models.Booking;
+import org.example.booking.models.Homestay;
 import org.example.booking.services.BookingService;
 import org.example.booking.services.EmailService;
 import org.example.booking.services.HomestayService;
@@ -22,7 +23,7 @@ public class BookingController {
     private HomestayService homestayService;
 
     @Autowired
-    private EmailService emailService; // Thêm service gửi email
+    private EmailService emailService;
 
     // Hiển thị form đặt phòng
     @GetMapping("/booking")
@@ -44,6 +45,9 @@ public class BookingController {
             Model model) {
 
         try {
+            Homestay homestay = homestayService.findById(homestayId);
+            String homestayName = homestay.getName(); // hoặc getTitle() nếu bạn dùng tên khác
+
             // Chuyển đổi ngày từ String sang LocalDate
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDate checkIn = LocalDate.parse(checkinDate, formatter);
@@ -54,14 +58,20 @@ public class BookingController {
                     homestayId, username, email, phone, checkIn, checkOut
             );
 
-            // Gửi email xác nhận đặt phòng
-            String subject = "Xác nhận đặt phòng tại Homestay";
-            String body = "Xin chào " + username + ",\n\n"
-                    + "Bạn đã đặt phòng thành công tại Homestay #" + homestayId + ".\n"
-                    + "Thời gian: từ " + checkinDate + " đến " + checkoutDate + ".\n\n"
+            // Gửi email xác nhận đặt phòng có mã QR
+            String subject = "Xác nhận đặt phòng HomeStay " + homestayName;
+
+            String body = "Xin chào " + username + ",<br><br>"
+                    + "Bạn đã đặt HomeStay <strong> " + homestayName + " thành công</strong>.<br>"
+                    + "Thời gian: từ <b>" + checkinDate + "</b> đến <b>" + checkoutDate + "</b>.<br><br>"
+                    + "Vui lòng quét mã QR bên dưới để xác nhận khi đến nơi.<br>"
                     + "Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi!";
 
-            emailService.sendSimpleEmail(email, subject, body);
+            String qrContent = "Homestay: " + homestayName + "\nTên: " + username
+                    + "\nCheck-in: " + checkinDate + "\nCheck-out: " + checkoutDate;
+
+
+            emailService.sendEmailWithQR(email, subject, body, qrContent);
 
             return "redirect:/booking-success";
         } catch (Exception e) {

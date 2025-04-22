@@ -1,26 +1,30 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<body>
+<body style="background: url('/images/bg_4.jpg') no-repeat center center fixed; background-size: cover;">
 <div th:replace="masterpage/head::head"></div>
 <div th:replace="masterpage/navbar::navbar"></div>
-<body style="background: url('/images/bg_4.jpg') no-repeat center center fixed; background-size: cover;">
-</body>
 
 <th:block th:fragment="content">
     <div class="container" style="max-width: 500px; margin-top: 80px;">
         <h1 class="text-center mb-4" style="color: white; font-family: 'Dancing Script', cursive;">Đăng Ký</h1>
-        <form th:action="@{/register}" method="post">
+
+        <!-- Hiển thị thông báo lỗi -->
+        <div th:if="${error}" class="alert alert-danger" role="alert">
+            <span th:text="${error}"></span>
+        </div>
+
+        <form th:action="@{/register}" method="post" th:object="${user}">
             <div class="form-group mb-3">
                 <label for="username" class="fw-bold" style="color: white;">Tên đăng nhập</label>
-                <input type="text" id="username" name="username" class="form-control" required />
+                <input type="text" id="username" name="username" class="form-control" required th:field="*{username}" />
             </div>
             <div class="form-group mb-3">
                 <label for="email" class="fw-bold" style="color: white;">Email</label>
-                <input type="email" id="email" name="email" class="form-control" required />
+                <input type="email" id="email" name="email" class="form-control" required th:field="*{email}" />
             </div>
             <div class="form-group mb-3">
                 <label for="password" class="fw-bold" style="color: white;">Mật khẩu</label>
-                <input type="password" id="password" name="password" class="form-control" required />
+                <input type="password" id="password" name="password" class="form-control" required th:field="*{password}" />
             </div>
             <div class="form-group mb-4">
                 <label for="confirmPassword" class="fw-bold" style="color: white;">Xác nhận mật khẩu</label>

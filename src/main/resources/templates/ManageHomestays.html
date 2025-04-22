@@ -124,7 +124,7 @@
                 <td th:text="${homestay.name}"></td>
                 <td th:text="${homestay.location}"></td>
                 <td th:text="${homestay.description}"></td>
-                <td th:text="|${homestay.pricePerNight} VNĐ|"></td>
+                <td th:text="|${homestay.pricePerNight}$|"></td>
                 <td>
                     <img th:src="${homestay.image != null ? homestay.image : '/images/default.jpg'}"
                          alt="ảnh thực tế"
