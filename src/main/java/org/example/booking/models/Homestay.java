@@ -25,9 +25,9 @@ public class Homestay {
     @Column(nullable = false)
     private double pricePerNight = 0;
 
-
     @Column(columnDefinition = "LONGTEXT")
     private String image;
+
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

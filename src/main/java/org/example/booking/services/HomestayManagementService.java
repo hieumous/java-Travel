@@ -15,9 +15,7 @@ public class HomestayManagementService {
     private BookingRepository bookingRepository;
 
     //Lấy danh sách homestay theo chủ sở hữu
-    public List<Homestay> getHomestaysByOwner(User owner) {
-        return homestayRepository.findByOwner(owner);
-    }
+
     //Cập nhật thông tin homestay
     public Homestay updateHomestay(Homestay homestay) {
         return homestayRepository.save(homestay);

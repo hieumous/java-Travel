@@ -12,11 +12,10 @@ import java.util.List;
 @Controller
 @RequiredArgsConstructor
 public class HomeController {
-    /*@GetMapping("/home")
-    public String HomePage() {
-        return "home";
-    }
-     */
+//    @GetMapping("/home")
+//    public String HomePage() {
+//        return "home";
+//    }
 
 
     private final ReviewService reviewService;
@@ -33,8 +32,5 @@ public class HomeController {
     public String blog() {
         return "blog-single";
     }
-
-
-
 
 }

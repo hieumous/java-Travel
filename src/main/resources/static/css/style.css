@@ -9533,6 +9533,7 @@ textarea.form-control {
   box-shadow: 0 0 15px 5px rgba(224, 168, 0, 0.6);
   transform: scale(1.05);
 }
+
 #ftco-navbar {
   background-color: #32579c !important;
 }
@@ -9564,3 +9565,4 @@ textarea.form-control {
   background-repeat: no-repeat;
   background-size: cover;
 }
+
