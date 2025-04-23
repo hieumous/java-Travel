@@ -2,9 +2,9 @@ package org.example.booking.repositories;
 
 import org.example.booking.models.ListFood;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
-@Repository
+import java.util.List;
+
 public interface FoodRepository extends JpaRepository<ListFood, Long> {
-    // Custom query methods if needed
+    List<ListFood> findByHomestayId(Long homestayId);
 }

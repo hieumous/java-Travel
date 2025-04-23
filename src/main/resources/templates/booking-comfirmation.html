@@ -28,7 +28,14 @@
         <p><strong>Check-in:</strong> <span th:text="${checkInDate}"></span></p>
         <p><strong>Check-out:</strong> <span th:text="${checkOutDate}"></span></p>
         <p><strong>Số đêm:</strong> <span th:text="${numberOfNights}"></span></p>
-        <p><strong>Tổng tiền:</strong> <span th:text="'$' + ${amount}"></span></p>
+        <p><strong>Tiền phòng:</strong> <span th:text="'$' + ${#numbers.formatDecimal(roomAmount, 0, 'COMMA', 2, 'POINT')}"></span></p>
+        <p><strong>Dịch vụ:</strong></p>
+        <ul th:if="${selectedServices != null and not #lists.isEmpty(selectedServices)}">
+            <li th:each="service : ${selectedServices}" th:text="${service.nameFood} + ': $' + ${#numbers.formatDecimal(service.price, 0, 'COMMA', 2, 'POINT')}"></li>
+        </ul>
+        <p th:if="${selectedServices == null or #lists.isEmpty(selectedServices)}">Không có dịch vụ nào được chọn.</p>
+        <p><strong>Tiền dịch vụ:</strong> <span th:text="'$' + ${#numbers.formatDecimal(serviceAmount, 0, 'COMMA', 2, 'POINT')}"></span></p>
+        <p><strong>Tổng tiền:</strong> <span th:text="'$' + ${#numbers.formatDecimal(totalAmount, 0, 'COMMA', 2, 'POINT')}"></span></p>
         <p><strong>Trạng thái:</strong> Chưa thanh toán</p>
         <p>Bạn đã đăng ký đặt phòng thành công! Vui lòng chọn một trong các tùy chọn dưới đây:</p>
         <a th:href="@{/payment/{id}(id=${bookingId})}" class="btn btn-primary">Thanh toán ngay</a>

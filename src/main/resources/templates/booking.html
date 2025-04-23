@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <style>
-    body{
+    body {
         padding-top: 100px !important;
     }
 </style>
@@ -11,71 +11,83 @@
 
 <th:block th:fragment="content">
     <h1 class="text-center mb-4" style="color: white; font-family: 'Dancing Script', cursive;">Đặt Phòng</h1>
-            <div class="row">
-                <div class="col-md-8 offset-md-2">
-                    <div class="booking-form ftco-animate p-4">
-                        <form th:action="@{/booking}" method="post" class="booking-form-1">
-                            <input type="hidden" name="homestayId" th:value="${homestayId}">
-                            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
-                            <div class="row">
-                                <div class="col-lg-6 align-items-end">
-                                    <div class="form-group">
-                                        <label for="name" class="fw-bold" style="color: black;">Họ và Tên</label>
-                                        <input type="text" name="name" class="form-control"
-                                                placeholder="Nhập họ và tên" required>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 align-items-end">
-                                    <div class="form-group">
-                                        <label for="email" class="fw-bold" style="color: black;">Email</label>
-                                        <input type="email" name="email" class="form-control"
-                                                placeholder="Nhập email" required>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 align-items-end">
-                                    <div class="form-group">
-                                        <label for="phone" class="fw-bold" style="color: black;">Số Điện Thoại</label>
-                                        <input type="tel" name="phone" class="form-control"
-                                               th:value="${defaultPhone}" placeholder="Nhập số điện thoại" required>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 align-items-end">
-                                    <div class="form-group">
-                                        <label for="checkinDate" class="fw-bold" style="color: black;">Ngày Nhận Phòng</label>
-                                        <div class="form-field">
-                                            <div class="icon"><span class="ion-ios-calendar"></span></div>
-                                            <input type="date" name="checkinDate" class="form-control" required>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 align-items-end">
-                                    <div class="form-group">
-                                        <label for="checkoutDate" class="fw-bold" style="color: black;">Ngày Trả Phòng</label>
-                                        <div class="form-field">
-                                            <div class="icon"><span class="ion-ios-calendar"></span></div>
-                                            <input type="date" name="checkoutDate" class="form-control" required>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-12 align-items-end">
-                                    <div class="form-group">
-                                        <label for="notes" class="fw-bold" style="color: black;">Yêu Cầu Đặc Biệt</label>
-                                        <textarea name="notes" class="form-control"
-                                                  placeholder="Ghi chú thêm (nếu có)"></textarea>
-                                    </div>
-                                </div>
-                                <div class="col-lg-12 align-self-end">
-                                    <div class="form-group">
-                                        <input type="submit" value="Gửi Đặt Phòng"
-                                               class="form-control btn btn-primary">
-                                    </div>
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="booking-form ftco-animate p-4">
+                <form th:action="@{/booking}" method="post" class="booking-form-1">
+                    <input type="hidden" name="homestayId" th:value="${homestayId}">
+                    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+                    <div class="row">
+                        <div class="col-lg-6 align-items-end">
+                            <div class="form-group">
+                                <label for="name" class="fw-bold" style="color: black;">Họ và Tên</label>
+                                <input type="text" name="name" class="form-control"
+                                       th:value="${defaultName}" placeholder="Nhập họ và tên" required>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 align-items-end">
+                            <div class="form-group">
+                                <label for="email" class="fw-bold" style="color: black;">Email</label>
+                                <input type="email" name="email" class="form-control"
+                                       th:value="${defaultEmail}" placeholder="Nhập email" required>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 align-items-end">
+                            <div class="form-group">
+                                <label for="phone" class="fw-bold" style="color: black;">Số Điện Thoại</label>
+                                <input type="tel" name="phone" class="form-control"
+                                       th:value="${defaultPhone}" placeholder="Nhập số điện thoại" required>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 align-items-end">
+                            <div class="form-group">
+                                <label for="checkinDate" class="fw-bold" style="color: black;">Ngày Nhận Phòng</label>
+                                <div class="form-field">
+                                    <div class="icon"><span class="ion-ios-calendar"></span></div>
+                                    <input type="date" name="checkinDate" class="form-control" required>
                                 </div>
                             </div>
-                        </form>
+                        </div>
+                        <div class="col-lg-6 align-items-end">
+                            <div class="form-group">
+                                <label for="checkoutDate" class="fw-bold" style="color: black;">Ngày Trả Phòng</label>
+                                <div class="form-field">
+                                    <div class="icon"><span class="ion-ios-calendar"></span></div>
+                                    <input type="date" name="checkoutDate" class="form-control" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 align-items-end">
+                            <div class="form-group">
+                                <label class="fw-bold" style="color: black;">Dịch Vụ</label>
+                                <div th:each="service : ${services}" class="form-check">
+                                    <input type="checkbox" class="form-check-input"
+                                           th:value="${service.id}" name="serviceIds"
+                                           th:id="'service' + ${service.id}">
+                                    <label class="form-check-label" th:for="'service' + ${service.id}"
+                                           style="color: black;"
+                                           th:text="${service.nameFood} + ' ($' + ${#numbers.formatDecimal(service.price, 0, 'COMMA', 2, 'POINT')} + ')'"></label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 align-items-end">
+                            <div class="form-group">
+                                <label for="notes" class="fw-bold" style="color: black;">Yêu Cầu Đặc Biệt</label>
+                                <textarea name="notes" class="form-control"
+                                          placeholder="Ghi chú thêm (nếu có)"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 align-self-end">
+                            <div class="form-group">
+                                <input type="submit" value="Gửi Đặt Phòng"
+                                       class="form-control btn btn-primary">
+                            </div>
+                        </div>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
+    </div>
 </th:block>
 
 <div th:replace="~{masterpage/loader :: loader}"></div>

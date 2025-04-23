@@ -21,14 +21,18 @@ public class ListFood {
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "price")
-    private Double price;
+    @Column(name = "price", nullable = false)
+    private double price = 0.0;
 
     @Lob
-    @Column(name = "image")
+    @Column(name = "image", columnDefinition = "LONGBLOB")
     private byte[] image;
 
-    // === Getters and Setters ===
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "homestay_id")
+    private Homestay homestay;
+
+    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -61,11 +65,11 @@ public class ListFood {
         this.description = description;
     }
 
-    public Double getPrice() {
+    public double getPrice() {
         return price;
     }
 
-    public void setPrice(Double price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 
@@ -75,5 +79,13 @@ public class ListFood {
 
     public void setImage(byte[] image) {
         this.image = image;
+    }
+
+    public Homestay getHomestay() {
+        return homestay;
+    }
+
+    public void setHomestay(Homestay homestay) {
+        this.homestay = homestay;
     }
 }

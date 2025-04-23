@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:seg="http://www.w3.org/1999/xhtml">
 <head th:replace="~{masterpage/head :: head}"></head>
 <body>
 <div th:replace="~{masterpage/navbar :: navbar}"></div>
 <div class="container mt-5">
     <h2>Trang Cá Nhân</h2>
-    <div(seg:authorize="hasRole('CUSTOMER')">
+    <div seg:authorize="hasRole('CUSTOMER')">
     <h3>Đặt phòng của bạn</h3>
     <table th:if="${bookings}" class="table table-bordered">
         <thead>

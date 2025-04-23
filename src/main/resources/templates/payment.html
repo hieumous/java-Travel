@@ -3,9 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Thanh Toán</title>
-    <!-- Thêm Bootstrap CSS qua CDN -->
+    <div th:replace="masterpage/head::head"></div>
     <style>
-        /* Tùy chỉnh màu cho nút MoMo */
+        body {
+            padding-top: 100px;
+            background: url('/images/bg_5.jpeg') no-repeat center center fixed;
+            background-size: cover;
+        }
         .btn-momo {
             background-color: #f63ea5 !important;
             color: #f8f8f8 !important;
@@ -13,90 +17,89 @@
         .btn-momo:hover {
             background-color: #af0c64 !important;
         }
+        .search-wrap-1 {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
     </style>
 </head>
-<body style="background: url('/images/bg_5.jpeg') no-repeat center center fixed; background-size: cover;">
-<div th:replace="masterpage/head::head"></div>
+<body>
 <div th:replace="masterpage/navbar::navbar"></div>
 
-<th:block th:fragment="content">
-    <section class="ftco-section ftco-no-pb ftco-no-pt">
-        <div class="container">
-            <div class="row justify-content-center pb-4">
-                <div class="col-md-12 heading-section text-center ftco-animate">
-                    <h2 class="mb-4" style="color: #000000">Thanh Toán Đặt Phòng</h2>
-                    <p style="color: #000000">Vui lòng kiểm tra thông tin đặt phòng và hoàn tất thanh toán.</p>
-                </div>
+<section class="ftco-section ftco-no-pb ftco-no-pt">
+    <div class="container">
+        <div class="row justify-content-center pb-4">
+            <div class="col-md-12 heading-section text-center ftco-animate">
+                <h2 class="mb-4" style="color: #000000">Thanh Toán Đặt Phòng</h2>
+                <p style="color: #000000">Vui lòng kiểm tra thông tin đặt phòng và hoàn tất thanh toán.</p>
             </div>
-            <div class="row">
-                <div class="col-md-10 offset-md-1">
-                    <div class="search-wrap-1 ftco-animate p-4 bg-light rounded">
-                        <div class="mb-4">
-                            <h4>Tóm tắt đặt phòng</h4>
-                            <div class="project-wrap ftco-animate">
-                                <a class="img" th:style="'background-image: url(' + (${image != null} ? ${image} : '/images/default.jpg') + '); height: 250px; background-size: cover;'"></a>
-                                <div class="text p-4">
-                                    <span class="price" th:text="'$' + ${#numbers.formatDecimal(pricePerNight, 0, 'COMMA', 2, 'POINT')} + '/night'"></span>
-                                    <h3 th:text="${name}"></h3>
-                                    <p class="location">
-                                        <span class="ion-ios-map"></span>
-                                        <span th:text="${location != null} ? ${location} : 'N/A'"></span>
-                                    </p>
-                                    <ul>
-                                        <li>
-                                            <span class="flaticon-king-size"></span>
-                                            <span th:text="${amenities != null} ? (${amenities.size()} + ' tiện nghi') : '0 tiện nghi'"></span>
-                                        </li>
-                                        <li>
-                                            <span class="flaticon-sun-umbrella"></span>
-                                            <span th:text="${location != null} ? ${location} : 'N/A'"></span>
-                                        </li>
-                                    </ul>
-                                    <p><strong>Ngày nhận phòng:</strong> <span th:text="${checkInDate}"></span></p>
-                                    <p><strong>Ngày trả phòng:</strong> <span th:text="${checkOutDate}"></span></p>
-                                    <p><strong>Số đêm:</strong> <span th:text="${numberOfNights}"></span></p>
-                                    <p><strong>Tổng tiền:</strong> <span th:text="${#numbers.formatDecimal(amount, 1, 2) + ' ' + currency}"></span></p>
-                                </div>
+        </div>
+        <div class="row">
+            <div class="col-md-10 offset-md-1">
+                <div class="search-wrap-1 ftco-animate p-4 rounded">
+                    <div class="mb-4">
+                        <h4>Tóm tắt đặt phòng</h4>
+                        <div class="project-wrap ftco-animate">
+                            <a class="img" th:style="'background-image: url(' + (${image != null} ? ${image} : '/images/default.jpg') + '); height: 250px; background-size: cover;'"></a>
+                            <div class="text p-4">
+                                <span class="price" th:text="'$' + ${#numbers.formatDecimal(pricePerNight, 0, 'COMMA', 2, 'POINT')} + '/night'"></span>
+                                <h3 th:text="${name}"></h3>
+                                <p class="location">
+                                    <span class="ion-ios-map"></span>
+                                    <span th:text="${location != null} ? ${location} : 'N/A'"></span>
+                                </p>
+                                <p><strong>Ngày nhận phòng:</strong> <span th:text="${checkInDate}"></span></p>
+                                <p><strong>Ngày trả phòng:</strong> <span th:text="${checkOutDate}"></span></p>
+                                <p><strong>Số đêm:</strong> <span th:text="${numberOfNights}"></span></p>
+                                <p><strong>Tiền phòng:</strong> <span th:text="'$' + ${#numbers.formatDecimal(roomAmount, 0, 'COMMA', 2, 'POINT')}"></span></p>
+                                <p><strong>Dịch vụ:</strong></p>
+                                <ul th:if="${selectedServices != null and not #lists.isEmpty(selectedServices)}">
+                                    <li th:each="service : ${selectedServices}" th:text="${service.nameFood} + ': $' + ${#numbers.formatDecimal(service.price, 0, 'COMMA', 2, 'POINT')}"></li>
+                                </ul>
+                                <p th:if="${selectedServices == null or #lists.isEmpty(selectedServices)}">Không có dịch vụ nào được chọn.</p>
+                                <p><strong>Tiền dịch vụ:</strong> <span th:text="'$' + ${#numbers.formatDecimal(serviceAmount, 0, 'COMMA', 2, 'POINT')}"></span></p>
+                                <p><strong>Tổng tiền:</strong> <span th:text="'$' + ${#numbers.formatDecimal(totalAmount, 0, 'COMMA', 2, 'POINT')} + ' ' + ${currency}"></span></p>
                             </div>
                         </div>
+                    </div>
 
-                        <form th:action="@{/simulate-payment}" method="post" class="search-property-1">
-                            <input type="hidden" name="bookingId" th:value="${bookingId}">
-                            <input type="hidden" name="homestayId" th:value="${homestayId}">
-                            <input type="hidden" name="amount" th:value="${amount}">
-                            <input type="hidden" name="currency" th:value="${currency}">
-                            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+                    <form th:action="@{/simulate-payment}" method="post" class="search-property-1">
+                        <input type="hidden" name="bookingId" th:value="${bookingId}">
+                        <input type="hidden" name="homestayId" th:value="${homestayId}">
+                        <input type="hidden" name="totalAmount" th:value="${totalAmount}">
+                        <input type="hidden" name="currency" th:value="${currency}">
+                        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 
-                            <div class="row">
-                                <div class="col-lg-12 align-items-end mb-4">
-                                    <div class="form-group">
-                                        <label style="color: #000000">Phương thức thanh toán</label>
-                                        <div class="mb-2">
-                                            <button type="submit" name="paymentMethod" value="MOMO" class="btn btn-momo w-100 rounded-pill">MoMo</button>
-                                        </div>
-                                        <div>
-                                            <button type="submit" name="paymentMethod" value="VNPAY" class="btn btn-warning w-100 rounded-pill">VNPay</button>
-                                        </div>
+                        <div class="row">
+                            <div class="col-lg-12 align-items-end mb-4">
+                                <div class="form-group">
+                                    <label style="color: #000000">Phương thức thanh toán</label>
+                                    <div class="mb-2">
+                                        <button type="submit" name="paymentMethod" value="MOMO" class="btn btn-momo w-100 rounded-pill">MoMo</button>
+                                    </div>
+                                    <div>
+                                        <button type="submit" name="paymentMethod" value="VNPAY" class="btn btn-warning w-100 rounded-pill">VNPay</button>
                                     </div>
                                 </div>
-
-                                <div class="col-lg-12 mt-3">
-                                    <p class="text-muted"><small>Lưu ý: Đây là thanh toán giả lập. Thông tin thẻ không được lưu trữ.</small></p>
-                                </div>
                             </div>
-                        </form>
-                    </div>
+
+                            <div class="col-lg-12 mt-3">
+                                <p class="text-muted"><small>Lưu ý: Đây là thanh toán giả lập. Thông tin thẻ không được lưu trữ.</small></p>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
-    </section>
-</th:block>
+    </div>
+</section>
 
 <div th:replace="masterpage/loader::loader"></div>
 <div th:replace="masterpage/footer::footer"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
-<!-- Thêm Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>

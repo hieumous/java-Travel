@@ -30,7 +30,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         // Cho phép truy cập công khai
-                        .requestMatchers("/", "/search/**", "/ManageHomestays/**", "/home", "/home/homestay/**", "/css/**", "/fonts/**", "/js/**", "/images/**", "/login", "/register").permitAll()
+                        .requestMatchers("/", "/search/**", "/ManageHomestays/**", "/home", "/home/homestay/**", "/home/service/image/**", "/css/**", "/fonts/**", "/js/**", "/images/**", "/login", "/register").permitAll()
                         // Yêu cầu vai trò CUSTOMER cho đặt phòng
                         .requestMatchers("/booking/**").hasRole("CUSTOMER")
                         // Yêu cầu vai trò OWNER cho quản lý homestay

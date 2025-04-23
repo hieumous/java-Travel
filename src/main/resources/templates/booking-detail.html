@@ -10,7 +10,7 @@
             background: url('/images/bg_13.jpg') no-repeat center center fixed;
             background-size: cover;
         }
-        .booking-details {
+        .detail-box {
             background: #fff;
             padding: 20px;
             border-radius: 10px;
@@ -23,23 +23,27 @@
 
 <div class="container mt-5">
     <h2 style="color: white; font-family: 'Dancing Script', cursive;">Chi tiết Đặt Phòng</h2>
-    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
-    <div th:if="${booking != null}" class="booking-details">
+    <div class="detail-box">
         <h4 th:text="'Đặt phòng tại ' + ${homestay.name}"></h4>
-        <p><strong>Người đặt:</strong> <span th:text="${booking.name}"></span></p>
+        <p><strong>Tên khách hàng:</strong> <span th:text="${booking.name}"></span></p>
         <p><strong>Email:</strong> <span th:text="${booking.email}"></span></p>
         <p><strong>Số điện thoại:</strong> <span th:text="${booking.phone}"></span></p>
-        <p><strong>Ngày nhận phòng:</strong> <span th:text="${booking.checkInDate}"></span></p>
-        <p><strong>Ngày trả phòng:</strong> <span th:text="${booking.checkOutDate}"></span></p>
+        <p><strong>Check-in:</strong> <span th:text="${booking.checkInDate}"></span></p>
+        <p><strong>Check-out:</strong> <span th:text="${booking.checkOutDate}"></span></p>
         <p><strong>Số đêm:</strong> <span th:text="${numberOfNights}"></span></p>
-        <p><strong>Tổng tiền:</strong> <span th:text="'$' + ${totalAmount}"></span></p>
+        <p><strong>Tiền phòng:</strong> <span th:text="'$' + ${#numbers.formatDecimal(roomAmount, 0, 'COMMA', 2, 'POINT')}"></span></p>
+        <p><strong>Dịch vụ:</strong></p>
+        <ul th:if="${selectedServices != null and not #lists.isEmpty(selectedServices)}">
+            <li th:each="service : ${selectedServices}" th:text="${service.nameFood} + ': $' + ${#numbers.formatDecimal(service.price, 0, 'COMMA', 2, 'POINT')}"></li>
+        </ul>
+        <p th:if="${selectedServices == null or #lists.isEmpty(selectedServices)}">Không có dịch vụ nào được chọn.</p>
+        <p><strong>Tiền dịch vụ:</strong> <span th:text="'$' + ${#numbers.formatDecimal(serviceAmount, 0, 'COMMA', 2, 'POINT')}"></span></p>
+        <p><strong>Tổng tiền:</strong> <span th:text="'$' + ${#numbers.formatDecimal(totalAmount, 0, 'COMMA', 2, 'POINT')}"></span></p>
         <p><strong>Trạng thái:</strong> <span th:text="${booking.status}"></span></p>
         <p><strong>Thanh toán:</strong> <span th:text="${booking.isPaid} ? 'Đã thanh toán' : 'Chưa thanh toán'"></span></p>
-        <a th:href="@{/profile}" class="btn btn-primary mt-3">Quay lại Hồ sơ</a>
-    </div>
-    <div th:if="${booking == null}" class="alert alert-danger text-center">
-        <h4>Đặt phòng không tồn tại</h4>
-        <a th:href="@{/profile}" class="btn btn-outline-primary mt-3">Quay lại Hồ sơ</a>
+        <a th:if="${booking.status == 'PENDING' and not booking.isPaid}" th:href="@{/booking/cancel/{id}(id=${booking.id})}" class="btn btn-danger">Hủy đặt phòng</a>
+        <a th:if="${booking.status == 'PENDING' and not booking.isPaid}" th:href="@{/payment/{id}(id=${booking.id})}" class="btn btn-primary">Thanh toán ngay</a>
+        <a href="/profile" class="btn btn-secondary">Quay lại</a>
     </div>
 </div>
 

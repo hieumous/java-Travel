@@ -3,6 +3,8 @@ package org.example.booking.models;
 import java.time.LocalDate;
 import jakarta.persistence.*;
 import org.example.booking.enums.BookingStatus;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "bookings")
@@ -36,13 +38,21 @@ public class Booking {
     private int month;
 
     @Column
-    private String name; // Đổi từ username thành name
+    private String name;
 
     @Column
     private String email;
 
     @Column
     private String phone;
+
+    @ManyToMany
+    @JoinTable(
+            name = "booking_services",
+            joinColumns = @JoinColumn(name = "booking_id"),
+            inverseJoinColumns = @JoinColumn(name = "service_id")
+    )
+    private List<ListFood> services = new ArrayList<>();
 
     // Constructor không đối số
     public Booking() {}
@@ -115,6 +125,14 @@ public class Booking {
 
     public String getPhone() { return phone; }
     public void setPhone(String phone) { this.phone = phone; }
+
+    public List<ListFood> getServices() {
+        return services;
+    }
+
+    public void setServices(List<ListFood> services) {
+        this.services = services;
+    }
 
     @PrePersist
     protected void onCreate() {

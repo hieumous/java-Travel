@@ -48,6 +48,36 @@
             border-radius: 12px;
             border: none;
         }
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .service-box {
+            background: #fff;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+        .service-box img {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 6px;
+            margin-bottom: 5px;
+        }
+        .service-box .name {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 3px;
+        }
+        .service-box .price {
+            font-size: 14px;
+            color: #007bff;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -74,15 +104,22 @@
         <div class="col-md-8">
             <div class="section-title">Thông tin Homestay</div>
             <ul class="info-list">
-                <li><strong>Giá:</strong> <span th:text="'$' + ${homestay.pricePerNight} + '/đêm'"></span></li>
+                <li><strong>Giá:</strong> <span th:text="'$' + ${#numbers.formatDecimal(homestay.pricePerNight, 0, 'COMMA', 2, 'POINT')} + '/đêm'"></span></li>
                 <li><strong>Địa điểm:</strong> <span th:text="${homestay.location}"></span></li>
                 <li><strong>Mô tả:</strong> <span th:text="${homestay.description}"></span></li>
             </ul>
-
-            <div class="section-title">Tiện nghi</div>
-            <ul class="info-list" th:each="amenity : ${homestay.amenities}">
-                <li th:text="'✅ ' + ${amenity.name}"></li>
-            </ul>
+            <div class="section-title">Dịch vụ</div>
+            <div th:if="${services != null and not #lists.isEmpty(services)}" class="services-grid">
+                <div class="service-box" th:each="service : ${services}">
+                    <img th:if="${service.image != null}" th:src="@{/home/service/image/{id}(id=${service.id})}" alt="Ảnh dịch vụ">
+                    <img th:if="${service.image == null}" src="/images/default-service.jpg" alt="Ảnh mặc định">
+                    <div class="name" th:text="${service.nameFood}"></div>
+                    <div class="price" th:text="'$' + ${#numbers.formatDecimal(service.price, 0, 'COMMA', 2, 'POINT')}"></div>
+                </div>
+            </div>
+            <div th:if="${services == null or #lists.isEmpty(services)}">
+                <p>Không có dịch vụ nào khả dụng.</p>
+            </div>
 
             <div class="section-title">Vị trí trên bản đồ</div>
             <iframe class="map-iframe"
@@ -103,7 +140,7 @@
         <div class="col-md-4">
             <div class="section-title">Đặt phòng ngay</div>
             <div class="card p-3">
-                <h4 th:text="'$' + ${homestay.pricePerNight} + '/đêm'"></h4>
+                <h4 th:text="'$' + ${#numbers.formatDecimal(homestay.pricePerNight, 0, 'COMMA', 2, 'POINT')} + '/đêm'"></h4>
                 <form th:action="@{/booking}" method="get">
                     <input type="hidden" name="homestayId" th:value="${homestay.id}">
                     <button class="btn btn-primary w-100 mt-3">Đặt Phòng</button>

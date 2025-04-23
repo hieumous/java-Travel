@@ -1,11 +1,12 @@
 package org.example.booking.services;
 
 import org.example.booking.enums.BookingStatus;
-import org.example.booking.enums.Role;
 import org.example.booking.models.Booking;
 import org.example.booking.models.Homestay;
+import org.example.booking.models.ListFood;
 import org.example.booking.models.User;
 import org.example.booking.repositories.BookingRepository;
+import org.example.booking.repositories.FoodRepository;
 import org.example.booking.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,9 @@ public class BookingService {
 
     @Autowired
     private HomestayService homestayService;
+
+    @Autowired
+    private FoodRepository foodRepository;
 
     public Booking createBooking(Homestay homestay, User user, LocalDate checkInDate, LocalDate checkOutDate, boolean isPaid) {
         if (checkOutDate.isBefore(checkInDate)) {
@@ -100,5 +104,17 @@ public class BookingService {
         } else {
             throw new RuntimeException("Chỉ có thể hủy đặt phòng đang chờ");
         }
+    }
+
+    public void saveSelectedServices(Long bookingId, List<Long> serviceIds) {
+        Booking booking = getBookingById(bookingId);
+        List<ListFood> services = serviceIds != null ? foodRepository.findAllById(serviceIds) : List.of();
+        booking.setServices(services);
+        bookingRepository.save(booking);
+    }
+
+    public List<ListFood> getSelectedServices(Long bookingId) {
+        Booking booking = getBookingById(bookingId);
+        return booking.getServices();
     }
 }

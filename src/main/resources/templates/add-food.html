@@ -78,13 +78,26 @@
         button[type="submit"]:hover {
             background-color: #45a049;
         }
+
+        .error {
+            color: red;
+            text-align: center;
+            margin-bottom: 15px;
+        }
     </style>
 </head>
 <body>
 
 <h2>Thêm món ăn / đồ uống</h2>
 
+<div th:if="${homestay != null}">
+    <p style="text-align: center;">Thêm món ăn/đồ uống cho Homestay: <strong th:text="${homestay.name}"></strong></p>
+</div>
+<div th:if="${message}" class="error" th:text="${message}"></div>
+<div th:if="${error}" class="error" th:text="${error}"></div>
+
 <form th:action="@{/save-food}" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="homestayId" th:value="${homestay != null ? homestay.id : ''}">
     <div>
         <label for="nameFood">Tên món ăn/đồ uống:</label>
         <input type="text" id="nameFood" name="nameFood" required />
@@ -105,12 +118,12 @@
 
     <div>
         <label for="price">Giá:</label>
-        <input type="number" id="price" name="price" step="0.01" />
+        <input type="number" id="price" name="price" step="0.01" min="0" required />
     </div>
 
     <div>
         <label for="image">Chọn ảnh (từ máy tính):</label>
-        <input type="file" id="image" name="image" accept="image/*" />
+        <input type="file" id="image" name="image" accept="image/*" required />
     </div>
 
     <button type="submit">Lưu</button>
