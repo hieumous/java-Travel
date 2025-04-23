@@ -1,77 +1,89 @@
 package org.example.booking.services;
+
 import org.example.booking.exceptions.ResourceNotFoundException;
+import org.example.booking.models.ListFood; // Use ListFood instead of Food
 import org.example.booking.models.Order;
 import org.example.booking.models.OrderRequest;
 import org.example.booking.models.OrderResponse;
+import org.example.booking.repositories.FoodRepository;
 import org.example.booking.repositories.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import org.example.booking.models.Food;
-import org.example.booking.repositories.FoodRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class FoodService {
 
     private final FoodRepository foodRepository;
+    private final OrderRepository orderRepository;
 
+    // Constructor injection for both FoodRepository and OrderRepository
     @Autowired
-    private OrderRepository orderRepository;
-    public FoodService(FoodRepository foodRepository) {
+    public FoodService(FoodRepository foodRepository, OrderRepository orderRepository) {
         this.foodRepository = foodRepository;
+        this.orderRepository = orderRepository;
     }
 
-    public Food createFood(Food food) {
+    // Create a new food item
+    public ListFood createFood(ListFood food) {  // Use ListFood instead of Food
         return foodRepository.save(food);
     }
 
-    public Food updateFood(Long id, Food updatedFood) {
-        Food existingFood = foodRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Food not found with id: " + id));
+    // Update an existing food item
+    public ListFood updateFood(Long id, ListFood updatedFood) {  // Use ListFood instead of Food
+        ListFood existingFood = foodRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Food not found with id: " + id));
 
-        existingFood.setName(updatedFood.getName());
+        existingFood.setNameFood(updatedFood.getNameFood());
         existingFood.setDescription(updatedFood.getDescription());
         existingFood.setPrice(updatedFood.getPrice());
 
         return foodRepository.save(existingFood);
     }
 
+    // Delete a food item by ID
     public void deleteFood(Long id) {
         foodRepository.deleteById(id);
     }
 
-    public Food getFoodById(Long id) {
+    // Retrieve a food item by ID
+    public ListFood getFoodById(Long id) {  // Use ListFood instead of Food
         return foodRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Food not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Food not found with id: " + id));
     }
 
-    public Iterable<Food> getAllFoods() {
+    // Get all food items
+    public Iterable<ListFood> getAllFoods() {  // Use ListFood instead of Food
         return foodRepository.findAll();
     }
 
+    // Place an order for food
+    @Transactional
     public OrderResponse orderFood(OrderRequest orderRequest) {
-        // Kiểm tra dữ liệu đầu vào
+        // Validate the order request data
         validateOrderRequest(orderRequest);
 
-        // Tìm món ăn theo ID
-        Food food = foodRepository.findById(orderRequest.getFoodId())
+        // Find the food item by ID
+        ListFood food = foodRepository.findById(orderRequest.getFoodId())  // Use ListFood instead of Food
                 .orElseThrow(() -> new ResourceNotFoundException("Food not found with ID: " + orderRequest.getFoodId()));
 
-        // Tạo đơn hàng mới
+        // Calculate total price (Optional, if needed)
+        double totalPrice = food.getPrice() * orderRequest.getQuantity();
+
+        // Create a new order
         Order order = new Order();
-        order.setFood(food);
         order.setQuantity(orderRequest.getQuantity());
         order.setDeliveryTime(orderRequest.getDeliveryTime());
 
-        // Lưu đơn hàng vào OrderRepository
+        // Save the order in the repository
         Order savedOrder = orderRepository.save(order);
 
-        // Trả về phản hồi đơn hàng
-        return new OrderResponse(savedOrder.getId(), food.getName(), food.getPrice(), savedOrder.getQuantity(), savedOrder.getDeliveryTime());
+        // Return order response with additional info
+        return new OrderResponse(savedOrder.getId(), food.getNameFood(), totalPrice, savedOrder.getQuantity(), savedOrder.getDeliveryTime());
     }
 
+    // Validate the incoming order request
     private void validateOrderRequest(OrderRequest orderRequest) {
-        // Implement validation logic here
         if (orderRequest.getQuantity() <= 0) {
             throw new IllegalArgumentException("Quantity must be a positive number");
         }

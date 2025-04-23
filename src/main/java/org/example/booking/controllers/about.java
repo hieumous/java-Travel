@@ -9,4 +9,9 @@ public class about {
     public String aboutPage() {
         return "about"; // sẽ trả về file about.html trong thư mục templates
     }
+
+    @GetMapping("/blog")
+    public String blogPage() {
+        return "blog-single"; // sẽ trả về file about.html trong thư mục templates
+    }
 }

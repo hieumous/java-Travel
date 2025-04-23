@@ -28,4 +28,4 @@ public class ManageHomestays {
     public String HomePage() {
      return "list-room";
      }
-}
+    }

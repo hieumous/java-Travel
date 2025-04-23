@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Thêm món ăn</title>
+    <style>
+        /* Cài đặt toàn cục */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-top: 30px;
+        }
+
+        /* Thiết kế cho form */
+        form {
+            width: 50%;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        form div {
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-size: 16px;
+            color: #555;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"], input[type="number"], textarea, select, input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            resize: vertical;
+            height: 120px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        /* Tinh chỉnh cho các thành phần form */
+        input[type="text"], input[type="number"], textarea, select, input[type="file"] {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Thêm món ăn / đồ uống</h2>
+
+<form th:action="@{/save-food}" method="post" enctype="multipart/form-data">
+    <div>
+        <label for="nameFood">Tên món ăn/đồ uống:</label>
+        <input type="text" id="nameFood" name="nameFood" required />
+    </div>
+
+    <div>
+        <label for="type">Loại:</label>
+        <select id="type" name="type">
+            <option value="FOOD">Món ăn</option>
+            <option value="DRINK">Đồ uống</option>
+        </select>
+    </div>
+
+    <div>
+        <label for="description">Mô tả:</label>
+        <textarea id="description" name="description"></textarea>
+    </div>
+
+    <div>
+        <label for="price">Giá:</label>
+        <input type="number" id="price" name="price" step="0.01" />
+    </div>
+
+    <div>
+        <label for="image">Chọn ảnh (từ máy tính):</label>
+        <input type="file" id="image" name="image" accept="image/*" />
+    </div>
+
+    <button type="submit">Lưu</button>
+</form>
+
+</body>
+</html>
