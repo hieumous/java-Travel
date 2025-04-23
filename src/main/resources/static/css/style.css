@@ -9565,4 +9565,7 @@ textarea.form-control {
   background-repeat: no-repeat;
   background-size: cover;
 }
+body {
+  padding-top: 50px; /* Khoảng cách 80px từ đỉnh để tránh nội dung bị đè lên navbar */
+}
 
