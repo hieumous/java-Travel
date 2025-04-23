@@ -29,12 +29,20 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/css/**", "/js/**", "/images/**", "/login", "/register").permitAll()
+                        // Cho phép truy cập công khai
+                        .requestMatchers("/","/ManageHomestays","/home", "home/homestay/**", "/css/**", "/js/**", "/images/**", "/login", "/register").permitAll()
+                        // Yêu cầu vai trò CUSTOMER cho các endpoint liên quan đến đặt phòng
+                        .requestMatchers("/booking/**").hasRole("CUSTOMER")
+                        // Yêu cầu vai trò OWNER cho các endpoint quản lý homestay
+                        .requestMatchers("/owner/**").hasRole("OWNER")
+                        // Yêu cầu vai trò ADMIN cho các endpoint quản trị
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        // Các yêu cầu khác yêu cầu đăng nhập
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .defaultSuccessUrl("/home", true)
+                        .defaultSuccessUrl("/home", false) // Giữ lại URL yêu cầu nếu có
                         .failureUrl("/login?error=true")
                         .permitAll()
                 )
@@ -62,7 +70,7 @@ public class SecurityConfig {
         return username -> {
             Optional<User> optionalUser = userRepository.findByUsername(username);
             if (optionalUser.isEmpty()) {
-                throw new UsernameNotFoundException("User not found: " + username);
+                throw new UsernameNotFoundException("Người dùng không tìm thấy: " + username);
             }
             User user = optionalUser.get();
             return org.springframework.security.core.userdetails.User

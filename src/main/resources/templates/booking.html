@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <body style="background: url('/images/img.png') no-repeat center center fixed; background-size: cover;">
-<div th:replace="masterpage/head::head"></div>
-<div th:replace="masterpage/navbar::navbar"></div>
+<div th:replace="~{masterpage/head :: head}"></div>
+<div th:replace="~{masterpage/navbar :: navbar}"></div>
 
 <th:block th:fragment="content">
     <section class="ftco-section ftco-no-pb ftco-no-pt">
@@ -21,20 +21,23 @@
                             <div class="row">
                                 <div class="col-lg-6 align-items-end">
                                     <div class="form-group">
-                                        <label for="username">Họ và Tên</label>
-                                        <input type="text" name="username" class="form-control" placeholder="Nhập họ và tên" required>
+                                        <label for="name">Họ và Tên</label>
+                                        <input type="text" name="name" class="form-control"
+                                               th:value="${defaultName}" placeholder="Nhập họ và tên" required>
                                     </div>
                                 </div>
                                 <div class="col-lg-6 align-items-end">
                                     <div class="form-group">
                                         <label for="email">Email</label>
-                                        <input type="email" name="email" class="form-control" placeholder="Nhập email" required>
+                                        <input type="email" name="email" class="form-control"
+                                               th:value="${defaultEmail}" placeholder="Nhập email" required>
                                     </div>
                                 </div>
                                 <div class="col-lg-6 align-items-end">
                                     <div class="form-group">
                                         <label for="phone">Số Điện Thoại</label>
-                                        <input type="tel" name="phone" class="form-control" placeholder="Nhập số điện thoại" required>
+                                        <input type="tel" name="phone" class="form-control"
+                                               th:value="${defaultPhone}" placeholder="Nhập số điện thoại" required>
                                     </div>
                                 </div>
                                 <div class="col-lg-6 align-items-end">
@@ -58,12 +61,14 @@
                                 <div class="col-lg-12 align-items-end">
                                     <div class="form-group">
                                         <label for="notes">Yêu Cầu Đặc Biệt</label>
-                                        <textarea name="notes" class="form-control" placeholder="Ghi chú thêm (nếu có)"></textarea>
+                                        <textarea name="notes" class="form-control"
+                                                  placeholder="Ghi chú thêm (nếu có)"></textarea>
                                     </div>
                                 </div>
                                 <div class="col-lg-12 align-self-end">
                                     <div class="form-group">
-                                        <input type="submit" value="Gửi Đặt Phòng" class="form-control btn btn-primary">
+                                        <input type="submit" value="Gửi Đặt Phòng"
+                                               class="form-control btn btn-primary">
                                     </div>
                                 </div>
                             </div>
@@ -75,7 +80,7 @@
     </section>
 </th:block>
 
-<div th:replace="masterpage/loader::loader"></div>
-<div th:replace="masterpage/footer::footer"></div>
+<div th:replace="~{masterpage/loader :: loader}"></div>
+<div th:replace="~{masterpage/footer :: footer}"></div>
 </body>
 </html>

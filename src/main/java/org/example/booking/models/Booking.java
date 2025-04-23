@@ -33,7 +33,16 @@ public class Booking {
     private BookingStatus status = BookingStatus.PENDING;
 
     @Column(nullable = false)
-    private int month; // Thêm trường month
+    private int month;
+
+    @Column
+    private String name; // Đổi từ username thành name
+
+    @Column
+    private String email;
+
+    @Column
+    private String phone;
 
     // Constructor không đối số
     public Booking() {}
@@ -48,7 +57,7 @@ public class Booking {
         this.checkInDate = checkInDate;
         this.checkOutDate = checkOutDate;
         this.isPaid = isPaid;
-        this.month = checkInDate.getMonthValue(); // Tự động tính month từ checkInDate
+        this.month = checkInDate.getMonthValue();
     }
 
     // Constructor có trạng thái tùy chỉnh
@@ -62,7 +71,7 @@ public class Booking {
         this.checkOutDate = checkOutDate;
         this.isPaid = isPaid;
         this.status = status != null ? status : BookingStatus.PENDING;
-        this.month = checkInDate.getMonthValue(); // Tự động tính month từ checkInDate
+        this.month = checkInDate.getMonthValue();
     }
 
     // Getters và Setters
@@ -78,7 +87,7 @@ public class Booking {
     public LocalDate getCheckInDate() { return checkInDate; }
     public void setCheckInDate(LocalDate checkInDate) {
         this.checkInDate = checkInDate;
-        this.month = checkInDate.getMonthValue(); // Cập nhật month khi thay đổi checkInDate
+        this.month = checkInDate.getMonthValue();
     }
 
     public LocalDate getCheckOutDate() { return checkOutDate; }
@@ -98,13 +107,22 @@ public class Booking {
     public int getMonth() { return month; }
     public void setMonth(int month) { this.month = month; }
 
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
+
     @PrePersist
     protected void onCreate() {
         if (this.status == null) {
             this.status = BookingStatus.PENDING;
         }
         if (this.checkInDate != null) {
-            this.month = this.checkInDate.getMonthValue(); // Đảm bảo month được thiết lập trước khi lưu
+            this.month = this.checkInDate.getMonthValue();
         }
     }
 }
