@@ -23,19 +23,18 @@ public class Render {
         model.addAttribute("homestays", homestays);
         return "home";
     }
-    @GetMapping("/ManageHomestays")
-    public String manageHomestays(Model model) {
-        List<Homestay> homestays = homestayService.findAll();
-        model.addAttribute("homestays", homestays);
-        return "ManageHomestays"; // tên file .html bạn muốn render
-    }
     @GetMapping("/homestay/{id}")
     public String showHomestayDetail(@PathVariable Long id, Model model) {
         Homestay homestay = homestayService.findById(id);
         model.addAttribute("homestay", homestay);
         return "homestay-detail";
     }
-
+    @GetMapping("/home/bookings/{id}")
+    public String viewBookings(@PathVariable("id") Long id, Model model) {
+        Homestay homestay = homestayService.findById(id);
+        model.addAttribute("homestay", homestay);
+        return "list-room"; // file này nằm trong src/main/resources/templates/list-room.html
+    }
     @GetMapping("/add")
     public String showAddForm(Model model) {
         model.addAttribute("homestay", new Homestay());

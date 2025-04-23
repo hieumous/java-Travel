@@ -58,6 +58,7 @@ public class BookingService {
         return bookingRepository.findByUserId(userId);
     }
 
+
     public List<Booking> getAllBookings() {
         return bookingRepository.findAll();
     }
@@ -80,5 +81,12 @@ public class BookingService {
         }
         long numberOfNights = ChronoUnit.DAYS.between(checkIn, checkOut);
         return homestay.getPricePerNight() * numberOfNights;
+    }
+    public List<Booking> findAll() {
+        return bookingRepository.findAll();
+    }
+
+    public void deleteById(Long id) {
+        bookingRepository.deleteById(id);
     }
 }

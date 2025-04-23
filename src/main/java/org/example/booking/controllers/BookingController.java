@@ -315,4 +315,6 @@ public class BookingController {
     public String bookingSuccess() {
         return "booking-success";
     }
+
+
 }

@@ -96,67 +96,60 @@
 
 <div class="sidebar">
     <h2>Menu</h2>
-    <div class="menu-item" onclick="showSection('homestay')">1. Danh sách Homestay</div>
+    <div class="menu-item" onclick="window.location.href='/ManageHomestays'">1. Danh sách Homestay</div>
     <div class="menu-item" onclick="showSection('menu')">2. Quản lý Menu & Dịch vụ</div>
-    <div class="menu-item" onclick="window.location.href='/list-room'">3. Danh sách đặt phòng</div>
+    <div class="menu-item" onclick="showSection('booking')">3. Danh sách đặt phòng</div>
     <div class="menu-item" onclick="showSection('revenue')">4. Doanh thu & Rút tiền</div>
 </div>
 
 <div class="content">
     <div id="homestay" class="section active">
-        <h3 style="background-color: #007bff; color: white; padding: 10px;">1. Danh sách Homestay đang sở hữu</h3>
-        <p>Hiển thị các homestay bạn đã đăng ký:</p>
+        <h3 style="background-color: #007bff; color: white; padding: 10px;">3. Danh sách đặt phòng</h3>
+        <p>Hiển thị danh sách phòng người dùng đã đặt phòng:</p>
         <div th:if="${error}" class="error" th:text="${error}"></div>
         <table>
             <thead>
             <tr>
-                <th>Tên Homestay</th>
-                <th>Địa điểm</th>
-                <th>Mô tả</th>
-                <th>Giá phòng/đêm</th>
-                <th>Ảnh</th>
+                <th>User</th>
+                <th>Name</th>
+                <th>Homestays</th>
+                <th>Check in</th>
+                <th>Check out</th>
+                <th>Phone</th>
+                <th>Email</th>
                 <th>Trạng thái</th>
-
             </tr>
             </thead>
             <tbody>
-            <tr th:each="homestay : ${homestays}">
-                <td th:text="${homestay.name}"></td>
-                <td th:text="${homestay.location}"></td>
-                <td th:text="${homestay.description}"></td>
-                <td th:text="|${homestay.pricePerNight}$|"></td>
-                <td>
-                    <img th:src="${homestay.image != null ? homestay.image : '/images/default.jpg'}"
-                         alt="ảnh thực tế"
-                         style="width: 100px; height: 70px; object-fit: cover;">
-                </td>
-                <td class="action-buttons">
-                    <a th:href="@{/home/edit/{id}(id=${homestay.id})}">
-                        <button style="background: gold; padding: 5px;">Chỉnh sửa</button>
-                    </a>
+            <tr th:each="booking : ${bookings}">
+                <td th:text="${booking.user.username}"></td>
+                <td th:text="${booking.name}"></td>
+                <td th:text="${booking.homestay.name}"></td>
+                <td th:text="${booking.checkInDate}"></td>
+                <td th:text="${booking.checkOutDate}"></td>
+                <td th:text="${booking.phone}"></td>
+                <td th:text="${booking.email}"></td>
 
-                    <form th:action="@{/home/delete/{id}(id=${homestay.id})}" method="post" style="display:inline;">
+                <td class="action-buttons">
+
+
+                    <form th:action="@{/delete/{id}(id=${booking.id})}" method="post" style="display:inline;">
                         <button type="submit" style="background: red; color: white; padding: 5px;"
                                 onclick="return confirm('Bạn có chắc chắn muốn xóa homestay này?');">
                             Xóa
                         </button>
                     </form>
-
-                    <a th:href="@{/list-room}">
-                        <button style="background: deepskyblue; padding: 5px;">Xem đặt phòng</button>
-                    </a>
                 </td>
             </tr>
-            <tr th:if="${homestays == null or homestays.isEmpty()}">
-                <td colspan="7" style="text-align: center;">Chưa có homestay nào.</td>
+
+            <tr th:if="${bookings == null or bookings.isEmpty()}">
+                <td colspan="7" style="text-align: center;">Chưa có booking nào.</td>
             </tr>
             </tbody>
         </table>
 
         <br>
-        <a th:href="@{/home/add}">
-            <button type="button" style="background: orange; color: white; padding: 8px; border: none;">+ Thêm Homestay Mới</button>
-        </a>
+
     </div>
 </div>
 
