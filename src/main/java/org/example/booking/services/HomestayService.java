@@ -11,11 +11,17 @@ import java.util.List;
 
 @Service
 public class HomestayService {
+
     @Autowired
     private HomestayRepository homestayRepository;
 
     @Autowired
     private ImageService imageService;
+
+    public List<Homestay> searchHomestays(String destination, Double priceLimit) {
+        // Gọi repository để tìm kiếm homestay
+        return homestayRepository.findHomestaysByCriteria(destination, priceLimit);
+    }
 
     public List<Homestay> findByName(String name) {
         return homestayRepository.findByNameContainingIgnoreCase(name);
