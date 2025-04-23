@@ -13,22 +13,18 @@ import java.util.List;
 @Repository
 public interface HomestayRepository extends JpaRepository<Homestay, Long> {
 
-    // Tìm kiếm theo tên homestay
     List<Homestay> findByNameContainingIgnoreCase(String name);
 
-    // Tìm theo location
     List<Homestay> findByLocationIgnoreCase(String location);
 
-    // Tìm theo giá
     List<Homestay> findByPricePerNightBetween(double minPrice, double maxPrice);
 
-    // Tìm homestay theo chủ sở hữu
     List<Homestay> findByOwner(User owner);
 
-    // Lọc homestay theo trạng thái
+    List<Homestay> findByOwnerId(Long ownerId); // Thêm phương thức mới
+
     List<Homestay> findByStatus(HomestayStatus status);
 
-    // Tìm homestay theo tên hoặc địa điểm và giá tối đa
     @Query("SELECT h FROM Homestay h WHERE " +
             "(:destination IS NULL OR LOWER(h.name) LIKE LOWER(CONCAT('%', :destination, '%')) " +
             "OR LOWER(h.location) LIKE LOWER(CONCAT('%', :destination, '%'))) " +

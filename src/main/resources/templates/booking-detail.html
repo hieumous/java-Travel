@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Chi tiết Đặt Phòng</title>
+    <div th:replace="~{masterpage/head :: head}"></div>
+    <style>
+        body {
+            padding-top: 100px;
+            background: url('/images/bg_13.jpg') no-repeat center center fixed;
+            background-size: cover;
+        }
+        .booking-details {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{masterpage/navbar :: navbar}"></div>
+
+<div class="container mt-5">
+    <h2 style="color: white; font-family: 'Dancing Script', cursive;">Chi tiết Đặt Phòng</h2>
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+    <div th:if="${booking != null}" class="booking-details">
+        <h4 th:text="'Đặt phòng tại ' + ${homestay.name}"></h4>
+        <p><strong>Người đặt:</strong> <span th:text="${booking.name}"></span></p>
+        <p><strong>Email:</strong> <span th:text="${booking.email}"></span></p>
+        <p><strong>Số điện thoại:</strong> <span th:text="${booking.phone}"></span></p>
+        <p><strong>Ngày nhận phòng:</strong> <span th:text="${booking.checkInDate}"></span></p>
+        <p><strong>Ngày trả phòng:</strong> <span th:text="${booking.checkOutDate}"></span></p>
+        <p><strong>Số đêm:</strong> <span th:text="${numberOfNights}"></span></p>
+        <p><strong>Tổng tiền:</strong> <span th:text="'$' + ${totalAmount}"></span></p>
+        <p><strong>Trạng thái:</strong> <span th:text="${booking.status}"></span></p>
+        <p><strong>Thanh toán:</strong> <span th:text="${booking.isPaid} ? 'Đã thanh toán' : 'Chưa thanh toán'"></span></p>
+        <a th:href="@{/profile}" class="btn btn-primary mt-3">Quay lại Hồ sơ</a>
+    </div>
+    <div th:if="${booking == null}" class="alert alert-danger text-center">
+        <h4>Đặt phòng không tồn tại</h4>
+        <a th:href="@{/profile}" class="btn btn-outline-primary mt-3">Quay lại Hồ sơ</a>
+    </div>
+</div>
+
+<div th:replace="~{masterpage/footer :: footer}"></div>
+</body>
+</html>

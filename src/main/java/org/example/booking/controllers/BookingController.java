@@ -48,25 +48,19 @@ public class BookingController {
             @RequestParam(required = false) Long homestayId,
             Model model,
             Authentication authentication) {
-        // Kiểm tra đăng nhập
         if (authentication == null || !authentication.isAuthenticated()) {
             return "redirect:/login?bookingRequired=true";
         }
-        // Kiểm tra vai trò CUSTOMER
         boolean isCustomer = authentication.getAuthorities().stream()
                 .anyMatch(auth -> auth.getAuthority().equals("ROLE_CUSTOMER"));
         if (!isCustomer) {
             model.addAttribute("error", "Bạn cần tài khoản CUSTOMER để đặt phòng.");
             return "login";
         }
-
-        // Kiểm tra homestayId
         if (homestayId == null) {
             model.addAttribute("error", "Không tìm thấy homestay. Vui lòng chọn homestay để đặt phòng.");
             return "error";
         }
-
-        // Lấy thông tin người dùng để điền mặc định
         Optional<User> user = userService.findByUsername(authentication.getName());
         model.addAttribute("homestayId", homestayId);
         model.addAttribute("booking", new Booking());
@@ -88,60 +82,54 @@ public class BookingController {
             Authentication authentication,
             Model model) {
         try {
-            // Kiểm tra đăng nhập
             if (authentication == null || !authentication.isAuthenticated()) {
                 return "redirect:/login?bookingRequired=true";
             }
-
-            // Kiểm tra homestayId
             if (homestayId == null) {
                 model.addAttribute("error", "Không tìm thấy homestay. Vui lòng chọn homestay để đặt phòng.");
                 return "booking";
             }
-
             Homestay homestay = homestayService.findById(homestayId);
             if (homestay == null) {
                 throw new IllegalArgumentException("Homestay không tìm thấy.");
             }
-
-            // Kiểm tra định dạng email
             if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
                 model.addAttribute("error", "Email không hợp lệ.");
                 model.addAttribute("homestayId", homestayId);
                 return "booking";
             }
-
-            // Chuẩn hóa số điện thoại
             String cleanedPhone = phone.replaceAll("[\\s-+]", "");
             if (!cleanedPhone.matches("^[0-9]{10,12}$")) {
                 model.addAttribute("error", "Số điện thoại không hợp lệ. Vui lòng nhập 10-12 chữ số.");
                 model.addAttribute("homestayId", homestayId);
                 return "booking";
             }
-
-            // Chuyển đổi ngày
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDate checkIn = LocalDate.parse(checkinDate, formatter);
             LocalDate checkOut = LocalDate.parse(checkoutDate, formatter);
-
-            // Kiểm tra ngày hợp lệ
             if (checkOut.isBefore(checkIn) || checkIn.isEqual(checkOut)) {
                 model.addAttribute("error", "Ngày trả phòng phải sau ngày nhận phòng.");
                 model.addAttribute("homestayId", homestayId);
                 return "booking";
             }
-
-            // Tính số tiền và số đêm
             double amount = bookingService.calculateTotalAmount(homestayId, checkIn, checkOut);
             long numberOfNights = ChronoUnit.DAYS.between(checkIn, checkOut);
-
-            // Tạo booking
             Optional<User> user = userService.findByUsername(authentication.getName());
             Booking booking = bookingService.createBookingFromForm(
                     homestayId, name, email, cleanedPhone, checkIn, checkOut, user.orElse(null)
             );
 
-            // Chuyển hướng đến trang thanh toán
+            // Gửi email xác nhận đăng ký
+            String subject = "Xác nhận đăng ký đặt phòng HomeStay " + homestay.getName();
+            String body = "Xin chào " + booking.getName() + ",<br><br>"
+                    + "Bạn đã đăng ký đặt phòng <strong>" + homestay.getName() + "</strong> thành công.<br>"
+                    + "Thời gian: từ <b>" + booking.getCheckInDate() + "</b> đến <b>" + booking.getCheckOutDate() + "</b>.<br>"
+                    + "Tổng tiền: <b>" + amount + " USD</b> (Chưa thanh toán).<br><br>"
+                    + "Vui lòng thanh toán để xác nhận đặt phòng.<br>"
+                    + "Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi!";
+            emailService.sendEmail(booking.getEmail(), subject, body);
+
+            // Chuyển đến trang xác nhận với tùy chọn thanh toán
             model.addAttribute("bookingId", booking.getId());
             model.addAttribute("homestayId", homestayId);
             model.addAttribute("name", homestay.getName());
@@ -154,7 +142,7 @@ public class BookingController {
             model.addAttribute("numberOfNights", numberOfNights);
             model.addAttribute("amount", amount);
             model.addAttribute("currency", "USD");
-            return "payment";
+            return "booking-comfirmation";
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
             model.addAttribute("homestayId", homestayId);
@@ -162,34 +150,39 @@ public class BookingController {
         }
     }
 
-    // Hiển thị trang thanh toán
-    @GetMapping("/payment")
-    public String showPaymentForm(
-            @RequestParam Long bookingId,
-            @RequestParam Long homestayId,
-            @RequestParam String name,
-            @RequestParam String image,
-            @RequestParam double pricePerNight,
-            @RequestParam String location,
-            @RequestParam String checkInDate,
-            @RequestParam String checkOutDate,
-            @RequestParam long numberOfNights,
-            @RequestParam double amount,
-            @RequestParam String currency,
-            Model model) {
-        model.addAttribute("bookingId", bookingId);
-        model.addAttribute("homestayId", homestayId);
-        model.addAttribute("name", name);
-        model.addAttribute("image", image);
-        model.addAttribute("pricePerNight", pricePerNight);
-        model.addAttribute("location", location);
-        model.addAttribute("amenities", homestayService.findById(homestayId).getAmenities());
-        model.addAttribute("checkInDate", checkInDate);
-        model.addAttribute("checkOutDate", checkOutDate);
-        model.addAttribute("numberOfNights", numberOfNights);
-        model.addAttribute("amount", amount);
-        model.addAttribute("currency", currency);
-        return "payment";
+    // Hiển thị trang thanh toán từ profile
+    @GetMapping("/payment/{bookingId}")
+    public String showPaymentForm(@PathVariable Long bookingId, Model model, Authentication authentication) {
+        try {
+            if (authentication == null || !authentication.isAuthenticated()) {
+                return "redirect:/login?bookingRequired=true";
+            }
+            Booking booking = bookingService.getBookingById(bookingId);
+            if (!booking.getUser().getUsername().equals(authentication.getName())) {
+                model.addAttribute("error", "Bạn không có quyền thanh toán cho đặt phòng này.");
+                return "error";
+            }
+            Homestay homestay = booking.getHomestay();
+            double amount = bookingService.calculateTotalAmount(homestay.getId(), booking.getCheckInDate(), booking.getCheckOutDate());
+            long numberOfNights = ChronoUnit.DAYS.between(booking.getCheckInDate(), booking.getCheckOutDate());
+
+            model.addAttribute("bookingId", bookingId);
+            model.addAttribute("homestayId", homestay.getId());
+            model.addAttribute("name", homestay.getName());
+            model.addAttribute("image", homestay.getImage());
+            model.addAttribute("pricePerNight", homestay.getPricePerNight());
+            model.addAttribute("location", homestay.getLocation());
+            model.addAttribute("amenities", homestay.getAmenities());
+            model.addAttribute("checkInDate", booking.getCheckInDate().toString());
+            model.addAttribute("checkOutDate", booking.getCheckOutDate().toString());
+            model.addAttribute("numberOfNights", numberOfNights);
+            model.addAttribute("amount", amount);
+            model.addAttribute("currency", "USD");
+            return "payment";
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            return "error";
+        }
     }
 
     // Xử lý thanh toán giả lập
@@ -203,23 +196,17 @@ public class BookingController {
             Authentication authentication,
             Model model) {
         try {
-            // Kiểm tra đăng nhập
             if (authentication == null || !authentication.isAuthenticated()) {
                 return "redirect:/login?bookingRequired=true";
             }
-
             Homestay homestay = homestayService.findById(homestayId);
             if (homestay == null) {
                 throw new IllegalArgumentException("Homestay không tìm thấy.");
             }
-            Booking booking = bookingService.updateBookingStatus(bookingId, BookingStatus.PENDING, false);
-
-            // Kiểm tra quyền sở hữu
+            Booking booking = bookingService.getBookingById(bookingId);
             if (!booking.getUser().getUsername().equals(authentication.getName())) {
                 throw new IllegalArgumentException("Bạn không có quyền thực hiện thanh toán cho đặt phòng này.");
             }
-
-            // Tạo PaymentInfo
             PaymentInfo paymentInfo = new PaymentInfo();
             paymentInfo.setBookingId(bookingId);
             paymentInfo.setHomestayId(homestayId);
@@ -227,25 +214,19 @@ public class BookingController {
             paymentInfo.setCurrency(currency);
             paymentInfo.setPaymentMethod(org.example.booking.enums.PaymentMethod.valueOf(paymentMethod));
             paymentInfo.setUser(booking.getUser());
-
-            // Gọi thanh toán giả lập
             PaymentStatus paymentStatus = paymentService.processPayment(paymentInfo);
 
             if (paymentStatus.getStatus() == PaymentStatus.PaymentStatusType.SUCCESSFUL) {
-                // Cập nhật booking
                 bookingService.updateBookingStatus(bookingId, BookingStatus.CONFIRMED, true);
-
-                // Gửi email xác nhận
-                String subject = "Xác nhận đặt phòng HomeStay " + homestay.getName();
+                String subject = "Xác nhận thanh toán HomeStay " + homestay.getName();
                 String body = "Xin chào " + booking.getName() + ",<br><br>"
-                        + "Bạn đã đặt HomeStay <strong>" + homestay.getName() + "</strong> thành công.<br>"
+                        + "Bạn đã thanh toán cho đặt phòng <strong>" + homestay.getName() + "</strong> thành công.<br>"
                         + "Thời gian: từ <b>" + booking.getCheckInDate() + "</b> đến <b>" + booking.getCheckOutDate() + "</b>.<br>"
                         + "Thanh toán: <b>" + amount + " " + currency + "</b> (Thành công).<br><br>"
                         + "Vui lòng quét mã QR bên dưới để xác nhận khi đến nơi.<br>"
                         + "Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi!";
                 String qrContent = "Homestay: " + homestay.getName() + "\nTên: " + booking.getName()
                         + "\nCheck-in: " + booking.getCheckInDate() + "\nCheck-out: " + booking.getCheckOutDate();
-
                 emailService.sendEmailWithQR(booking.getEmail(), subject, body, qrContent);
                 return "redirect:/booking-success";
             } else {
@@ -273,14 +254,58 @@ public class BookingController {
             model.addAttribute("pricePerNight", homestayService.findById(homestayId).getPricePerNight());
             model.addAttribute("location", homestayService.findById(homestayId).getLocation());
             model.addAttribute("amenities", homestayService.findById(homestayId).getAmenities());
-            model.addAttribute("checkInDate", bookingService.updateBookingStatus(bookingId, BookingStatus.PENDING, false).getCheckInDate().toString());
-            model.addAttribute("checkOutDate", bookingService.updateBookingStatus(bookingId, BookingStatus.PENDING, false).getCheckOutDate().toString());
+            model.addAttribute("checkInDate", bookingService.getBookingById(bookingId).getCheckInDate().toString());
+            model.addAttribute("checkOutDate", bookingService.getBookingById(bookingId).getCheckOutDate().toString());
             model.addAttribute("numberOfNights", ChronoUnit.DAYS.between(
-                    bookingService.updateBookingStatus(bookingId, BookingStatus.PENDING, false).getCheckInDate(),
-                    bookingService.updateBookingStatus(bookingId, BookingStatus.PENDING, false).getCheckOutDate()));
+                    bookingService.getBookingById(bookingId).getCheckInDate(),
+                    bookingService.getBookingById(bookingId).getCheckOutDate()));
             model.addAttribute("amount", amount);
             model.addAttribute("currency", currency);
             return "payment";
+        }
+    }
+
+    // Hiển thị chi tiết đặt phòng
+    @GetMapping("/booking/{id}")
+    public String showBookingDetail(@PathVariable Long id, Model model, Authentication authentication) {
+        try {
+            if (authentication == null || !authentication.isAuthenticated()) {
+                return "redirect:/login?bookingRequired=true";
+            }
+            Booking booking = bookingService.getBookingById(id);
+            if (!booking.getUser().getUsername().equals(authentication.getName()) &&
+                    !authentication.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
+                model.addAttribute("error", "Bạn không có quyền xem chi tiết đặt phòng này.");
+                return "error";
+            }
+            model.addAttribute("booking", booking);
+            model.addAttribute("homestay", booking.getHomestay());
+            model.addAttribute("numberOfNights", ChronoUnit.DAYS.between(booking.getCheckInDate(), booking.getCheckOutDate()));
+            model.addAttribute("totalAmount", bookingService.calculateTotalAmount(booking.getHomestay().getId(), booking.getCheckInDate(), booking.getCheckOutDate()));
+            return "booking-detail";
+        } catch (Exception e) {
+            model.addAttribute("error", "Lỗi khi tải chi tiết đặt phòng: " + e.getMessage());
+            return "error";
+        }
+    }
+
+    // Hủy đặt phòng
+    @GetMapping("/booking/cancel/{id}")
+    public String cancelBooking(@PathVariable Long id, Model model, Authentication authentication) {
+        try {
+            if (authentication == null || !authentication.isAuthenticated()) {
+                return "redirect:/login?bookingRequired=true";
+            }
+            Booking booking = bookingService.getBookingById(id);
+            if (!booking.getUser().getUsername().equals(authentication.getName())) {
+                model.addAttribute("error", "Bạn không có quyền hủy đặt phòng này.");
+                return "error";
+            }
+            bookingService.cancelBooking(id);
+            return "redirect:/profile";
+        } catch (Exception e) {
+            model.addAttribute("error", "Lỗi khi hủy đặt phòng: " + e.getMessage());
+            return "error";
         }
     }
 
@@ -289,7 +314,6 @@ public class BookingController {
     @PreAuthorize("hasRole('ADMIN')")
     public String showAllBookings(Model model, Authentication authentication) {
         try {
-            // Kiểm tra đăng nhập và vai trò admin
             if (authentication == null || !authentication.isAuthenticated()) {
                 return "redirect:/login?adminRequired=true";
             }
@@ -299,8 +323,6 @@ public class BookingController {
                 model.addAttribute("error", "Bạn cần tài khoản ADMIN để xem danh sách đặt phòng.");
                 return "login";
             }
-
-            // Lấy danh sách tất cả đặt phòng
             List<Booking> bookings = bookingService.getAllBookings();
             model.addAttribute("bookings", bookings);
             return "admin-bookings";
@@ -315,6 +337,4 @@ public class BookingController {
     public String bookingSuccess() {
         return "booking-success";
     }
-
-
 }

@@ -18,7 +18,6 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    // Đăng ký tài khoản mới (kiểm tra trùng username/email, mã hóa mật khẩu)
     public User registerUser(User user) {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new RuntimeException("Email đã tồn tại!");
@@ -27,37 +26,43 @@ public class UserService {
             throw new RuntimeException("Tên đăng nhập đã tồn tại!");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRole(Role.CUSTOMER); // Gán vai trò mặc định
+        user.setRole(Role.CUSTOMER);
         return userRepository.save(user);
     }
 
-    // Lưu hoặc cập nhật user (có mã hóa mật khẩu)
     public User saveUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 
-    // Tìm người dùng theo username
     public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
 
-    // Tìm người dùng theo email
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
-    // Tìm người dùng theo ID
     public Optional<User> getUserById(Long id) {
         return userRepository.findById(id);
     }
 
-    // Xóa người dùng theo ID
     public void deleteUserById(Long id) {
         if (userRepository.existsById(id)) {
             userRepository.deleteById(id);
         } else {
             throw new RuntimeException("Người dùng không tồn tại!");
         }
+    }
+
+    public void updateUserProfile(User updatedUser, String newPassword) {
+        User user = userRepository.findById(updatedUser.getId())
+                .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
+        user.setUsername(updatedUser.getUsername());
+        user.setEmail(updatedUser.getEmail());
+        if (newPassword != null && !newPassword.isEmpty()) {
+            user.setPassword(passwordEncoder.encode(newPassword));
+        }
+        userRepository.save(user);
     }
 }

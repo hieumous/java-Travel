@@ -36,13 +36,10 @@ public class BookingService {
 
     public Booking createBookingFromForm(Long homestayId, String name, String email, String phone,
                                          LocalDate checkInDate, LocalDate checkOutDate, User user) {
-        // Tìm homestay
         Homestay homestay = homestayService.findById(homestayId);
         if (homestay == null) {
             throw new IllegalArgumentException("Homestay không tìm thấy: " + homestayId);
         }
-
-        // Tạo booking với user được truyền vào
         Booking booking = new Booking(homestay, user, checkInDate, checkOutDate, false);
         booking.setName(name);
         booking.setEmail(email);
@@ -57,7 +54,6 @@ public class BookingService {
     public List<Booking> getBookingsByUserId(Long userId) {
         return bookingRepository.findByUserId(userId);
     }
-
 
     public List<Booking> getAllBookings() {
         return bookingRepository.findAll();
@@ -82,11 +78,27 @@ public class BookingService {
         long numberOfNights = ChronoUnit.DAYS.between(checkIn, checkOut);
         return homestay.getPricePerNight() * numberOfNights;
     }
+
     public List<Booking> findAll() {
         return bookingRepository.findAll();
     }
 
     public void deleteById(Long id) {
         bookingRepository.deleteById(id);
+    }
+
+    public Booking getBookingById(Long id) {
+        return bookingRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Đặt phòng không tồn tại"));
+    }
+
+    public void cancelBooking(Long id) {
+        Booking booking = getBookingById(id);
+        if (booking.getStatus() == BookingStatus.PENDING) {
+            booking.setStatus(BookingStatus.CANCELLED);
+            bookingRepository.save(booking);
+        } else {
+            throw new RuntimeException("Chỉ có thể hủy đặt phòng đang chờ");
+        }
     }
 }

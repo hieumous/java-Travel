@@ -30,30 +30,30 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         // Cho phép truy cập công khai
-
-                        .requestMatchers("/","/search/**", "/ManageHomestays/**", "/home", "home/homestay/**", "/css/**","/fonts/**", "/js/**", "/images/**", "/login", "/register").permitAll()
-
-                        // Yêu cầu vai trò CUSTOMER cho các endpoint liên quan đến đặt phòng
+                        .requestMatchers("/", "/search/**", "/ManageHomestays/**", "/home", "/home/homestay/**", "/css/**", "/fonts/**", "/js/**", "/images/**", "/login", "/register").permitAll()
+                        // Yêu cầu vai trò CUSTOMER cho đặt phòng
                         .requestMatchers("/booking/**").hasRole("CUSTOMER")
-                        // Yêu cầu vai trò OWNER cho các endpoint quản lý homestay
+                        // Yêu cầu vai trò OWNER cho quản lý homestay
                         .requestMatchers("/owner/**").hasRole("OWNER")
-                        // Yêu cầu vai trò ADMIN cho các endpoint quản trị
+                        // Yêu cầu vai trò ADMIN cho quản trị
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        // Các yêu cầu khác yêu cầu đăng nhập
+                        // Yêu cầu đăng nhập cho profile
+                        .requestMatchers("/profile/**").authenticated()
+                        // Các yêu cầu khác cần đăng nhập
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .defaultSuccessUrl("/home", false) // Giữ lại URL yêu cầu nếu có
+                        .defaultSuccessUrl("/home", false)
                         .failureUrl("/login?error=true")
                         .permitAll()
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .logoutSuccessUrl("/home?logout=true") // Chuyển hướng về /home sau khi đăng xuất
-                        .invalidateHttpSession(true) // Xóa session
-                        .deleteCookies("JSESSIONID") // Xóa cookie session
-                        .clearAuthentication(true) // Xóa thông tin xác thực
+                        .logoutSuccessUrl("/home?logout=true")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+                        .clearAuthentication(true)
                         .permitAll()
                 );
 

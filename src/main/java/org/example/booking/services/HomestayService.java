@@ -19,7 +19,6 @@ public class HomestayService {
     private ImageService imageService;
 
     public List<Homestay> searchHomestays(String destination, Double priceLimit) {
-        // Gọi repository để tìm kiếm homestay
         return homestayRepository.findHomestaysByCriteria(destination, priceLimit);
     }
 
@@ -59,5 +58,9 @@ public class HomestayService {
 
     public void deleteById(Long id) {
         homestayRepository.deleteById(id);
+    }
+
+    public List<Homestay> getHomestaysByOwnerId(Long ownerId) {
+        return homestayRepository.findByOwnerId(ownerId);
     }
 }

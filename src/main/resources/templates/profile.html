@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{masterpage/head :: head}"></head>
+<body>
+<div th:replace="~{masterpage/navbar :: navbar}"></div>
+<div class="container mt-5">
+    <h2>Trang Cá Nhân</h2>
+    <div(seg:authorize="hasRole('CUSTOMER')">
+    <h3>Đặt phòng của bạn</h3>
+    <table th:if="${bookings}" class="table table-bordered">
+        <thead>
+        <tr>
+            <th>Homestay</th>
+            <th>Check-in</th>
+            <th>Check-out</th>
+            <th>Trạng thái</th>
+            <th>Thanh toán</th>
+            <th>Hành động</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="booking : ${bookings}">
+            <td th:text="${booking.homestay.name}"></td>
+            <td th:text="${booking.checkInDate}"></td>
+            <td th:text="${booking.checkOutDate}"></td>
+            <td th:text="${booking.status}"></td>
+            <td>
+                <span th:if="${booking.isPaid}" class="text-success">Thanh toán thành công</span>
+                <span th:unless="${booking.isPaid}" class="text-danger">Chưa thanh toán</span>
+            </td>
+            <td>
+                <a th:href="@{/booking/{id}(id=${booking.id})}" class="btn btn-info">Chi tiết</a>
+                <a th:if="${booking.status == 'PENDING'}" th:href="@{/booking/cancel/{id}(id=${booking.id})}" class="btn btn-danger">Hủy</a>
+                <a th:if="${!booking.isPaid}" th:href="@{/payment/{id}(id=${booking.id})}" class="btn btn-primary">Thanh toán</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <p th:unless="${bookings}">Bạn chưa có đặt phòng nào.</p>
+</div>
+
+<div sec:authorize="hasRole('OWNER')">
+    <h3>Homestay của bạn</h3>
+    <table th:if="${homestays}" class="table table-bordered">
+        <thead>
+        <tr>
+            <th>Tên</th>
+            <th>Địa điểm</th>
+            <th>Giá/đêm</th>
+            <th>Trạng thái</th>
+            <th>Hành động</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="homestay : ${homestays}">
+            <td th:text="${homestay.name}"></td>
+            <td th:text="${homestay.location}"></td>
+            <td th:text="${homestay.pricePerNight}"></td>
+            <td th:text="${homestay.status}"></td>
+            <td>
+                <a th:href="@{/homestay/{id}(id=${homestay.id})}" class="btn btn-info">Chi tiết</a>
+                <a th:href="@{/homestay/edit/{id}(id=${homestay.id})}" class="btn btn-warning">Sửa</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <p th:unless="${homestays}">Bạn chưa đăng homestay nào.</p>
+</div>
+</div>
+<div th:replace="~{masterpage/footer :: footer}"></div>
+</body>
+</html>

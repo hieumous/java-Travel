@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Xác nhận Đặt Phòng</title>
+    <div th:replace="~{masterpage/head :: head}"></div>
+    <style>
+        body {
+            padding-top: 100px;
+            background: url('/images/bg_13.jpg') no-repeat center center fixed;
+            background-size: cover;
+        }
+        .confirmation-box {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{masterpage/navbar :: navbar}"></div>
+
+<div class="container mt-5">
+    <h2 style="color: white; font-family: 'Dancing Script', cursive;">Xác nhận Đặt Phòng</h2>
+    <div class="confirmation-box">
+        <h4 th:text="'Đặt phòng tại ' + ${name}"></h4>
+        <p><strong>Check-in:</strong> <span th:text="${checkInDate}"></span></p>
+        <p><strong>Check-out:</strong> <span th:text="${checkOutDate}"></span></p>
+        <p><strong>Số đêm:</strong> <span th:text="${numberOfNights}"></span></p>
+        <p><strong>Tổng tiền:</strong> <span th:text="'$' + ${amount}"></span></p>
+        <p><strong>Trạng thái:</strong> Chưa thanh toán</p>
+        <p>Bạn đã đăng ký đặt phòng thành công! Vui lòng chọn một trong các tùy chọn dưới đây:</p>
+        <a th:href="@{/payment/{id}(id=${bookingId})}" class="btn btn-primary">Thanh toán ngay</a>
+        <a th:href="@{/home}" class="btn btn-secondary">Trở về trang chủ</a>
+    </div>
+</div>
+
+<div th:replace="~{masterpage/footer :: footer}"></div>
+</body>
+</html>
