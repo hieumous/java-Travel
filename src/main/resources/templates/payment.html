@@ -6,7 +6,7 @@
     <div th:replace="masterpage/head::head"></div>
     <style>
         body {
-            padding-top: 100px;
+            padding-top: 190px!important;
             background: url('/images/bg_5.jpeg') no-repeat center center fixed;
             background-size: cover;
         }
@@ -31,16 +31,13 @@
 <section class="ftco-section ftco-no-pb ftco-no-pt">
     <div class="container">
         <div class="row justify-content-center pb-4">
-            <div class="col-md-12 heading-section text-center ftco-animate">
-                <h2 class="mb-4" style="color: #000000">Thanh Toán Đặt Phòng</h2>
-                <p style="color: #000000">Vui lòng kiểm tra thông tin đặt phòng và hoàn tất thanh toán.</p>
-            </div>
+
         </div>
         <div class="row">
             <div class="col-md-10 offset-md-1">
                 <div class="search-wrap-1 ftco-animate p-4 rounded">
                     <div class="mb-4">
-                        <h4>Tóm tắt đặt phòng</h4>
+                        <h1 class="text-center mb-4" style="color: black; font-family: 'Dancing Script', cursive;">Tóm tắt đặt phòng</h1>
                         <div class="project-wrap ftco-animate">
                             <a class="img" th:style="'background-image: url(' + (${image != null} ? ${image} : '/images/default.jpg') + '); height: 250px; background-size: cover;'"></a>
                             <div class="text p-4">

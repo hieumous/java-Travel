@@ -48,7 +48,6 @@ public class BookingController {
     @Autowired
     private FoodRepository foodRepository;
 
-    // Hiển thị form đặt phòng
     @GetMapping("/booking")
     public String showBookingForm(
             @RequestParam(required = false) Long homestayId,
@@ -78,11 +77,10 @@ public class BookingController {
         model.addAttribute("defaultName", user.get().getUsername());
         model.addAttribute("defaultEmail", user.get().getEmail() != null ? user.get().getEmail() : "");
         model.addAttribute("defaultPhone", "");
-        model.addAttribute("services", foodRepository.findByHomestayId(homestayId)); // Sửa ở đây
+        model.addAttribute("services", foodRepository.findByHomestayId(homestayId));
         return "booking";
     }
 
-    // Xử lý form đặt phòng
     @PostMapping("/booking")
     public String processBooking(
             @RequestParam(required = false) Long homestayId,
@@ -99,9 +97,7 @@ public class BookingController {
                 return "redirect:/login?bookingRequired=true";
             }
             if (homestayId == null) {
-                model.addAttribute("error", "Không tìm thấy homestay. Vui lòng chọn homestay để đặt phòng.");
-                model.addAttribute("homestayId", homestayId);
-                model.addAttribute("services", homestayId != null ? foodRepository.findByHomestayId(homestayId) : new ArrayList<>());
+                model.addAttribute("error", "Không tìm thấy homestay...");
                 return "booking";
             }
             Homestay homestay = homestayService.findById(homestayId);
@@ -110,15 +106,11 @@ public class BookingController {
             }
             if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
                 model.addAttribute("error", "Email không hợp lệ.");
-                model.addAttribute("homestayId", homestayId);
-                model.addAttribute("services", foodRepository.findByHomestayId(homestayId));
                 return "booking";
             }
             String cleanedPhone = phone.replaceAll("[\\s-+]", "");
             if (!cleanedPhone.matches("^[0-9]{10,12}$")) {
-                model.addAttribute("error", "Số điện thoại không hợp lệ. Vui lòng nhập 10-12 chữ số.");
-                model.addAttribute("homestayId", homestayId);
-                model.addAttribute("services", foodRepository.findByHomestayId(homestayId));
+                model.addAttribute("error", "Số điện thoại không hợp lệ...");
                 return "booking";
             }
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -126,12 +118,12 @@ public class BookingController {
             LocalDate checkOut = LocalDate.parse(checkoutDate, formatter);
             if (checkOut.isBefore(checkIn) || checkIn.isEqual(checkOut)) {
                 model.addAttribute("error", "Ngày trả phòng phải sau ngày nhận phòng.");
-                model.addAttribute("homestayId", homestayId);
-                model.addAttribute("services", foodRepository.findByHomestayId(homestayId));
                 return "booking";
             }
             double roomAmount = bookingService.calculateTotalAmount(homestayId, checkIn, checkOut);
-            List<ListFood> selectedServices = serviceIds != null ? foodRepository.findAllById(serviceIds) : List.of();
+            List<ListFood> selectedServices = serviceIds != null && !serviceIds.isEmpty()
+                    ? foodRepository.findAllById(serviceIds)
+                    : new ArrayList<>(); // Sử dụng ArrayList mutable
             double serviceAmount = selectedServices.stream().mapToDouble(ListFood::getPrice).sum();
             double totalAmount = roomAmount + serviceAmount;
             long numberOfNights = ChronoUnit.DAYS.between(checkIn, checkOut);
@@ -140,57 +132,64 @@ public class BookingController {
                     homestayId, name, email, cleanedPhone, checkIn, checkOut, user.orElse(null)
             );
             bookingService.saveSelectedServices(booking.getId(), serviceIds);
-
-            // Gửi email xác nhận đăng ký
-            String subject = "Xác nhận đăng ký đặt phòng HomeStay " + homestay.getName();
-            StringBuilder body = new StringBuilder();
-            body.append("Xin chào ").append(booking.getName()).append(",<br><br>")
-                    .append("Bạn đã đăng ký đặt phòng <strong>").append(homestay.getName()).append("</strong> thành công.<br>")
-                    .append("Thời gian: từ <b>").append(booking.getCheckInDate()).append("</b> đến <b>")
-                    .append(booking.getCheckOutDate()).append("</b>.<br>")
-                    .append("Tiền phòng: <b>").append(roomAmount).append(" USD</b>.<br>");
-            if (!selectedServices.isEmpty()) {
-                body.append("Dịch vụ:<br><ul>");
-                for (ListFood service : selectedServices) {
-                    body.append("<li>").append(service.getNameFood()).append(": ").append(service.getPrice()).append(" USD</li>");
+            try {
+                String subject = "Xác nhận đăng ký đặt phòng HomeStay " + homestay.getName();
+                StringBuilder body = new StringBuilder();
+                body.append("Xin chào ").append(booking.getName()).append(",<br><br>")
+                        .append("Bạn đã đăng ký đặt phòng <strong>").append(homestay.getName()).append("</strong> thành công.<br>")
+                        .append("Thời gian: từ <b>").append(booking.getCheckInDate()).append("</b> đến <b>")
+                        .append(booking.getCheckOutDate()).append("</b>.<br>")
+                        .append("Tiền phòng: <b>").append(roomAmount).append(" USD</b>.<br>");
+                if (!selectedServices.isEmpty()) {
+                    body.append("Dịch vụ:<br><ul>");
+                    for (ListFood service : selectedServices) {
+                        body.append("<li>").append(service.getNameFood()).append(": ").append(service.getPrice()).append(" USD</li>");
+                    }
+                    body.append("</ul>");
+                    body.append("Tiền dịch vụ: <b>").append(serviceAmount).append(" USD</b>.<br>");
                 }
-                body.append("</ul>");
-                body.append("Tiền dịch vụ: <b>").append(serviceAmount).append(" USD</b>.<br>");
+                body.append("Tổng tiền: <b>").append(totalAmount).append(" USD</b> (Chưa thanh toán).<br><br>")
+                        .append("Vui lòng thanh toán để xác nhận đặt phòng.<br>")
+                        .append("Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi!");
+                emailService.sendEmail(booking.getEmail(), subject, body.toString());
+            } catch (Exception emailEx) {
+                System.err.println("Lỗi khi gửi email: " + emailEx.getMessage());
             }
-            body.append("Tổng tiền: <b>").append(totalAmount).append(" USD</b> (Chưa thanh toán).<br><br>")
-                    .append("Vui lòng thanh toán để xác nhận đặt phòng.<br>")
-                    .append("Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi!");
-            emailService.sendEmail(booking.getEmail(), subject, body.toString());
-
-            // Chuyển đến trang xác nhận với tùy chọn thanh toán
+            String image = homestay.getImage() != null ? homestay.getImage() : "";
+            List<?> amenities = homestay.getAmenities() != null ? homestay.getAmenities() : new ArrayList<>();
             model.addAttribute("bookingId", booking.getId());
             model.addAttribute("homestayId", homestayId);
             model.addAttribute("name", homestay.getName());
-            model.addAttribute("image", homestay.getImage());
+            model.addAttribute("image", image);
             model.addAttribute("pricePerNight", homestay.getPricePerNight());
             model.addAttribute("location", homestay.getLocation());
-            model.addAttribute("amenities", homestay.getAmenities());
+            model.addAttribute("amenities", amenities);
             model.addAttribute("checkInDate", checkIn.toString());
             model.addAttribute("checkOutDate", checkOut.toString());
             model.addAttribute("numberOfNights", numberOfNights);
             model.addAttribute("roomAmount", roomAmount);
             model.addAttribute("serviceAmount", serviceAmount);
             model.addAttribute("totalAmount", totalAmount);
-            model.addAttribute("selectedServices", selectedServices);
+            model.addAttribute("selectedServices", new ArrayList<>(selectedServices)); // Đảm bảo mutable
             model.addAttribute("currency", "USD");
-            return "confirmation"; // Sửa tên template để khớp với file confirmation.html
-        } catch (Exception e) {
+            return "booking-confirmation";
+        } catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());
+            model.addAttribute("homestayId", homestayId);
+            model.addAttribute("services", homestayId != null ? foodRepository.findByHomestayId(homestayId) : new ArrayList<>());
+            return "booking";
+        } catch (Exception e) {
+            System.err.println("Lỗi trong processBooking: " + e.getMessage());
+            e.printStackTrace();
+            model.addAttribute("error", "Đã xảy ra lỗi: " + e.getMessage());
             model.addAttribute("homestayId", homestayId);
             model.addAttribute("services", homestayId != null ? foodRepository.findByHomestayId(homestayId) : new ArrayList<>());
             return "booking";
         }
     }
 
-    // Hiển thị trang thanh toán từ profile
     @GetMapping("/payment/{bookingId}")
     public String showPaymentForm(@PathVariable Long bookingId, Model model, Authentication authentication) {
-        // Khởi tạo các biến cần thiết với giá trị mặc định
         double roomAmount = 0.0;
         double serviceAmount = 0.0;
         double totalAmount = 0.0;
@@ -228,13 +227,11 @@ public class BookingController {
             model.addAttribute("roomAmount", roomAmount);
             model.addAttribute("serviceAmount", serviceAmount);
             model.addAttribute("totalAmount", totalAmount);
-            model.addAttribute("selectedServices", selectedServices);
+            model.addAttribute("selectedServices", new ArrayList<>(selectedServices)); // Đảm bảo mutable
             model.addAttribute("currency", "USD");
             return "payment";
         } catch (Exception e) {
-            // Trong trường hợp có lỗi, sử dụng booking và homestay nếu chúng đã được khởi tạo
             if (booking != null && homestay != null) {
-                // Tính lại các giá trị nếu có thể
                 roomAmount = bookingService.calculateTotalAmount(homestay.getId(), booking.getCheckInDate(), booking.getCheckOutDate());
                 selectedServices = bookingService.getSelectedServices(bookingId);
                 serviceAmount = selectedServices.stream().mapToDouble(ListFood::getPrice).sum();
@@ -255,13 +252,12 @@ public class BookingController {
             model.addAttribute("roomAmount", roomAmount);
             model.addAttribute("serviceAmount", serviceAmount);
             model.addAttribute("totalAmount", totalAmount);
-            model.addAttribute("selectedServices", selectedServices);
+            model.addAttribute("selectedServices", new ArrayList<>(selectedServices));
             model.addAttribute("currency", "USD");
-            return "payment"; // Trả về trang payment để hiển thị lỗi thay vì "error"
+            return "payment";
         }
     }
 
-    // Xử lý thanh toán giả lập
     @PostMapping("/simulate-payment")
     public String simulatePayment(
             @RequestParam Long bookingId,
@@ -343,7 +339,7 @@ public class BookingController {
                 model.addAttribute("roomAmount", roomAmount);
                 model.addAttribute("serviceAmount", serviceAmount);
                 model.addAttribute("totalAmount", totalAmount);
-                model.addAttribute("selectedServices", selectedServices);
+                model.addAttribute("selectedServices", new ArrayList<>(selectedServices));
                 model.addAttribute("currency", currency);
                 return "payment";
             }
@@ -364,13 +360,12 @@ public class BookingController {
             model.addAttribute("roomAmount", roomAmount);
             model.addAttribute("serviceAmount", serviceAmount);
             model.addAttribute("totalAmount", totalAmount);
-            model.addAttribute("selectedServices", selectedServices);
+            model.addAttribute("selectedServices", new ArrayList<>(selectedServices));
             model.addAttribute("currency", currency);
             return "payment";
         }
     }
 
-    // Hiển thị chi tiết đặt phòng
     @GetMapping("/booking/{id}")
     public String showBookingDetail(@PathVariable Long id, Model model, Authentication authentication) {
         try {
@@ -394,7 +389,7 @@ public class BookingController {
             model.addAttribute("roomAmount", roomAmount);
             model.addAttribute("serviceAmount", serviceAmount);
             model.addAttribute("totalAmount", totalAmount);
-            model.addAttribute("selectedServices", selectedServices);
+            model.addAttribute("selectedServices", new ArrayList<>(selectedServices));
             return "booking-detail";
         } catch (Exception e) {
             model.addAttribute("error", "Lỗi khi tải chi tiết đặt phòng: " + e.getMessage());
@@ -402,7 +397,6 @@ public class BookingController {
         }
     }
 
-    // Hủy đặt phòng
     @GetMapping("/booking/cancel/{id}")
     public String cancelBooking(@PathVariable Long id, Model model, Authentication authentication) {
         try {
@@ -422,7 +416,6 @@ public class BookingController {
         }
     }
 
-    // Trang xác nhận đặt phòng thành công
     @GetMapping("/booking-success")
     public String bookingSuccess() {
         return "booking-success";

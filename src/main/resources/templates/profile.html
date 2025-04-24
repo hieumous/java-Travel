@@ -1,16 +1,17 @@
 <!DOCTYPE html>
+</style>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       xmlns:seg="http://www.w3.org/1999/xhtml">
 <head th:replace="~{masterpage/head :: head}"></head>
-<body>
+<body style="background: url('/images/bg_12.jpg') no-repeat center center fixed; background-size: cover;">
 <div th:replace="~{masterpage/navbar :: navbar}"></div>
 <div class="container mt-5">
-    <h2>Trang Cá Nhân</h2>
+    <h1 class="text-center mb-4" style="color: whitesmoke; font-family: 'Dancing Script', cursive;">PROFILE</h1>
     <div seg:authorize="hasRole('CUSTOMER')">
-    <h3>Đặt phòng của bạn</h3>
-    <table th:if="${bookings}" class="table table-bordered">
+    <h3 class="text-center mb-4" style="color: whitesmoke;" >Danh sách phòng đẵ đăng ký</h3>
+    <table th:if="${bookings}" class="table table-bordered" >
         <thead>
-        <tr>
+        <tr class="fw-bold" style="color:whitesmoke;">
             <th>Homestay</th>
             <th>Check-in</th>
             <th>Check-out</th>
@@ -20,7 +21,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="booking : ${bookings}">
+        <tr th:each="booking : ${bookings}" class="fw-bold" style="color: whitesmoke;">
             <td th:text="${booking.homestay.name}"></td>
             <td th:text="${booking.checkInDate}"></td>
             <td th:text="${booking.checkOutDate}"></td>

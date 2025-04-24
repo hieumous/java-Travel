@@ -131,7 +131,7 @@ public class Booking {
     }
 
     public void setServices(List<ListFood> services) {
-        this.services = services;
+        this.services = services != null ? new ArrayList<>(services) : new ArrayList<>();
     }
 
     @PrePersist

@@ -12,7 +12,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/home")
@@ -27,7 +29,11 @@ public class Render {
     @GetMapping
     public String listHomestays(Model model) {
         List<Homestay> homestays = homestayService.findAll();
+        // Tạo map lưu số lượng dịch vụ cho mỗi homestay
+        Map<Long, Integer> serviceCounts = new HashMap<>();
+        homestays.forEach(h -> serviceCounts.put(h.getId(), foodRepository.findByHomestayId(h.getId()).size()));
         model.addAttribute("homestays", homestays);
+        model.addAttribute("serviceCounts", serviceCounts);
         return "home";
     }
 

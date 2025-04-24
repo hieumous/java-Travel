@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -108,8 +109,11 @@ public class BookingService {
 
     public void saveSelectedServices(Long bookingId, List<Long> serviceIds) {
         Booking booking = getBookingById(bookingId);
-        List<ListFood> services = serviceIds != null ? foodRepository.findAllById(serviceIds) : List.of();
-        booking.setServices(services);
+        List<ListFood> services = serviceIds != null && !serviceIds.isEmpty()
+                ? foodRepository.findAllById(serviceIds)
+                : new ArrayList<>(); // Sử dụng ArrayList mutable
+        booking.getServices().clear(); // Xóa dịch vụ hiện tại
+        booking.getServices().addAll(services); // Thêm dịch vụ mới
         bookingRepository.save(booking);
     }
 

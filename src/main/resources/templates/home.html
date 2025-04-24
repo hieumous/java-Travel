@@ -213,7 +213,7 @@
         <div class="container">
             <div class="row justify-content-center pb-4">
                 <div class="col-md-12 heading-section text-center ftco-animate">
-                    <h2 class="mb-4">Tour Destination</h2>
+                    <h2 class="mb-4">Home Stays</h2>
                 </div>
             </div>
             <div class="swiper mySwiper">
@@ -235,7 +235,7 @@
                                 <ul>
                                     <li>
                                         <span class="flaticon-king-size"></span>
-                                        <span th:text="${h.amenities != null} ? (${h.amenities.size()} + ' tiện nghi') : '0 tiện nghi'"></span>
+                                        <span th:text="${serviceCounts[h.id] != null} ? (${serviceCounts[h.id]} + ' dịch vụ') : '0 dịch vụ'"></span>
                                     </li>
                                     <li>
                                         <span class="flaticon-sun-umbrella"></span>
